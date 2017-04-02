@@ -43,6 +43,30 @@ class Todo
     private $endDate;
 
 
+    /**
+     * @var boolean
+     * @ORM\Column(name="state_flag", type="boolean", nullable=true)
+     *
+     */
+    private $stateFlag = true;
+
+    /**
+     * @return boolean
+     */
+    public function getStateFlag()
+    {
+        return $this->stateFlag;
+    }
+
+    /**
+     * @param boolean $stateFlag
+     */
+    public function setStateFlag($stateFlag)
+    {
+        $this->stateFlag = $stateFlag;
+    }
+
+
     public function __construct()
     {
         $this->creationDate = new \DateTime();
