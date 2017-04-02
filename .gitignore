@@ -22,4 +22,6 @@ composer.phar
 /web/fonts/
 /web/js/
 /web/uploads/
+project_access.log
+project_error.log
 

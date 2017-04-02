@@ -2,9 +2,11 @@
 
 namespace AppBundle\Controller\Todo;
 
+
 use AppBundle\Entity\Todo;
+use AppBundle\Form\Todo\BaseTodoType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -13,16 +15,23 @@ class TodoController extends Controller
     /**
      * @Route("/todo/create", name="todo_create")
      */
-    public function createTodoAction()
+    public function createTodoAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $todo = new Todo();
-        $todo
-            ->setDescription('Sbegat\' Pohavat\'')
-            ->setEndDate(new \DateTime('2005-08-15T15:52:01+00:00'));
-        $em->persist($todo);
-        $em->flush();
+        $form = $this->createForm(BaseTodoType::class);
+        $form->handleRequest($request);
 
-        return new Response($todo->getDescription() . '<br>' . $todo->getEndDate()->format(DATE_W3C));
+        if ($form->isSubmitted()) {
+            $todo = new Todo();
+            $todo
+                ->setDescription($form->get('description')->getData())
+                ->setEndDate($form->get('end_date')->getData());
+            $em->persist($todo);
+            $em->flush();
+
+            return $this->redirectToRoute('todo_create');
+        }
+
+        return $this->render('todo_crud/todo_create.html.twig', ['form' => $form->createView()]);
     }
 }
