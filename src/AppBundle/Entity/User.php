@@ -1,5 +1,5 @@
 <?php
-namespace CatalogBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -216,4 +216,3 @@ class User implements UserInterface
     }
 
 }
-
