@@ -45,6 +45,7 @@ class TaskController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $taskGroup = new TaskGroup();
+        $taskGroup->setDescription('Work');
 
         $task = new Task();
         $task

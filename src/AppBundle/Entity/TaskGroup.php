@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\Task;
 
 /**
  * @ORM\Entity
@@ -29,9 +30,11 @@ class TaskGroup
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=30, nullable=true)
+     * @ORM\Column(name="description", type="string", length=30, nullable=false)
      */
     private $description;
+
+    // TODO: connect TaskGroup to User
 
     public function __construct()
     {
@@ -51,11 +54,11 @@ class TaskGroup
     /**
      * Add task
      *
-     * @param \AppBundle\Entity\Task $task
+     * @param Task $task
      *
      * @return TaskGroup
      */
-    public function addTask(\AppBundle\Entity\Task $task)
+    public function addTask(Task $task)
     {
         $this->tasks[] = $task;
 
@@ -67,7 +70,7 @@ class TaskGroup
     /**
      * Remove task
      *
-     * @param \AppBundle\Entity\Task $task
+     * @param Task $task
      */
     public function removeTask(\AppBundle\Entity\Task $task)
     {
@@ -79,7 +82,7 @@ class TaskGroup
     /**
      * Get tasks
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
     public function getTasks()
     {

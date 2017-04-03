@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\TaskGroup;
 
 /**
  * Task
@@ -52,7 +53,7 @@ class Task
     private $stateFlag = true;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TaskGroup", inversedBy="tasks")
+     * @ORM\ManyToOne(targetEntity="TaskGroup", inversedBy="tasks")
      */
     private $group = null;
 
@@ -149,10 +150,10 @@ class Task
     /**
      * Set groupId
      *
-     * @param \AppBundle\Entity\TaskGroup $group
+     * @param TaskGroup $group
      * @return Task
      */
-    public function setGroup(\AppBundle\Entity\TaskGroup $group = null)
+    public function setGroup(TaskGroup $group = null)
     {
         $this->group = $group;
 
@@ -162,7 +163,7 @@ class Task
     /**
      * Get groupId
      *
-     * @return \AppBundle\Entity\TaskGroup
+     * @return TaskGroup
      */
     public function getGroup()
     {
