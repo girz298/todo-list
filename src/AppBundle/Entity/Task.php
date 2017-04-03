@@ -13,11 +13,37 @@ use AppBundle\Entity\TaskGroup;
  */
 class Task
 {
+    /*
+     * Statuses of daily Task be Eisenhower
+     */
+    const STATUS_IMPORTANT_URGENT = 1;         // DO NOW
+    const STATUS_IMPORTANT_NOT_URGENT = 2;     // DECIDE WHEN TO DO IT
+    const STATUS_NOT_IMPORTANT_URGENT = 3;     // DELEGATE IT AWAY
+    const STATUS_NOT_IMPORTANT_NOT_URGENT = 4; // DELETE IT
 
-    const IMPORTANT_URGENT = 1;         // DO NOW
-    const IMPORTANT_NOT_URGENT = 2;     // DECIDE WHEN TO DO IT
-    const NOT_IMPORTANT_URGENT = 3;     // DELEGATE IT AWAY
-    const NOT_IMPORTANT_NOT_URGENT = 4; // DELETE IT
+    private $statuses = [
+        self::STATUS_IMPORTANT_URGENT,
+        self::STATUS_IMPORTANT_NOT_URGENT,
+        self::STATUS_NOT_IMPORTANT_URGENT,
+        self::STATUS_NOT_IMPORTANT_NOT_URGENT
+    ];
+
+    /*
+     * Types of Task by Franklin
+     */
+    const TYPE_DAILY_GOAL = 1;          // On THAT TYPE start using Eisenhower method
+    const TYPE_WEEKLY_GOAL = 2;
+    const TYPE_INTERMEDIATE_GOAL = 3;
+    const TYPE_LONG_RANGE_GOAL = 4;
+    const TYPE_GOVERNING_VALUE = 5;
+
+    private $types = [
+        self::TYPE_DAILY_GOAL,
+        self::TYPE_WEEKLY_GOAL,
+        self::TYPE_INTERMEDIATE_GOAL,
+        self::TYPE_LONG_RANGE_GOAL,
+        self::TYPE_GOVERNING_VALUE
+    ];
 
     /**
      * @var integer
@@ -64,9 +90,45 @@ class Task
     private $group = null;
 
     /**
+     * @ORM\Column(type="smallint", nullable=true)
+     */
+    private $status;
+
+    /**
      * @ORM\Column(type="smallint")
      */
-    private $status = 4;
+    private $type;
+
+    /**
+     * @return integer
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     * @return Task
+     */
+    public function setType($type)
+    {
+        if (!in_array($type, $this->types)){
+            throw new \InvalidArgumentException(
+                "Invalid type. Status should be in " . join(', ', $this->types
+                ));
+        }
+
+        $this->type = $type;
+
+        if (!$this->getStatus() && $type === self::TYPE_DAILY_GOAL) {
+            $this->setStatus(self::STATUS_NOT_IMPORTANT_URGENT);
+        }
+
+
+
+        return $this;
+    }
 
     /**
      * @return integer
@@ -82,16 +144,12 @@ class Task
      */
     public function setStatus($status)
     {
-        $statuses = [
-            self::IMPORTANT_URGENT,
-            self::IMPORTANT_NOT_URGENT,
-            self::NOT_IMPORTANT_URGENT,
-            self::NOT_IMPORTANT_NOT_URGENT
-        ];
-
-        if (!in_array($status, $statuses)){
+        if($this->getType() !== self::TYPE_DAILY_GOAL) {
+            throw new \InvalidArgumentException('Statuses active only for DAILY_GOALS');
+        }
+        if (!in_array($status, $this->statuses)){
             throw new \InvalidArgumentException(
-                "Invalid status. Status should be in " . join(', ', $statuses
+                "Invalid status. Status should be in " . join(', ', $this->statuses
                 ));
         }
 
@@ -124,6 +182,7 @@ class Task
     public function __construct()
     {
         $this->creationDate = new \DateTime();
+        $this->setType(self::TYPE_DAILY_GOAL);
     }
 
     /**

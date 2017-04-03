@@ -15,7 +15,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class TaskController extends Controller
 {
     /**
+     * @param Request $request
      * @Route("/task/create", name="task_create")
+     * @return Response
      */
     public function createTodoAction(Request $request)
     {
@@ -24,10 +26,15 @@ class TaskController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
+            $groupRepo = $em->getRepository('AppBundle:TaskGroup');
+            $taskGroup = $groupRepo->find(2);
             $task = new Task();
             $task
                 ->setDescription($form->get('description')->getData())
-                ->setEndDate($form->get('end_date')->getData());
+                ->setEndDate($form->get('end_date')->getData())
+                ->setType(Task::TYPE_DAILY_GOAL);
+            $taskGroup->addTask($task);
+            $em->persist($taskGroup);
             $em->persist($task);
             $em->flush();
 
@@ -39,8 +46,9 @@ class TaskController extends Controller
 
     /**
      * @Route("/task/group", name="task_group")
+     * @return Response
      */
-    public function taskGroupAction(Request $request)
+    public function taskGroupAction()
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -51,7 +59,7 @@ class TaskController extends Controller
         $task
             ->setDescription('some description')
             ->setEndDate(new \DateTime())
-            ->setStatus(Task::IMPORTANT_URGENT);
+            ->setStatus(Task::STATUS_IMPORTANT_URGENT);
 
         $task2 = new Task();
         $task2
