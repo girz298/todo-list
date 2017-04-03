@@ -32,6 +32,7 @@ class Task
     /**
      * @var \DateTime
      * @ORM\Column(name="creation_date", type="datetime", nullable=false)
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $creationDate;
 
@@ -49,6 +50,11 @@ class Task
      *
      */
     private $stateFlag = true;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TaskGroup", inversedBy="tasks")
+     */
+    private $group = null;
 
     /**
      * @return boolean
@@ -138,5 +144,28 @@ class Task
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set groupId
+     *
+     * @param \AppBundle\Entity\TaskGroup $group
+     * @return Task
+     */
+    public function setGroup(\AppBundle\Entity\TaskGroup $group = null)
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+
+    /**
+     * Get groupId
+     *
+     * @return \AppBundle\Entity\TaskGroup
+     */
+    public function getGroup()
+    {
+        return $this->group;
     }
 }
