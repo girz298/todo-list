@@ -3,7 +3,7 @@ namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-class TodoRepository extends EntityRepository
+class TaskRepository extends EntityRepository
 {
 
 }

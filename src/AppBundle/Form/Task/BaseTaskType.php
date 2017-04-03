@@ -6,7 +6,7 @@
  * Time: 16:49
  */
 
-namespace AppBundle\Form\Todo;
+namespace AppBundle\Form\Task;
 
 
 use Symfony\Component\Form\AbstractType;
@@ -15,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class BaseTodoType extends AbstractType
+class BaseTaskType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)

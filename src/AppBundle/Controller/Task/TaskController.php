@@ -1,37 +1,37 @@
 <?php
 
-namespace AppBundle\Controller\Todo;
+namespace AppBundle\Controller\Task;
 
 
-use AppBundle\Entity\Todo;
-use AppBundle\Form\Todo\BaseTodoType;
+use AppBundle\Entity\Task;
+use AppBundle\Form\Task\BaseTaskType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-class TodoController extends Controller
+class TaskController extends Controller
 {
     /**
-     * @Route("/todo/create", name="todo_create")
+     * @Route("/task/create", name="task_create")
      */
     public function createTodoAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $form = $this->createForm(BaseTodoType::class);
+        $form = $this->createForm(BaseTaskType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $todo = new Todo();
-            $todo
+            $task = new Task();
+            $task
                 ->setDescription($form->get('description')->getData())
                 ->setEndDate($form->get('end_date')->getData());
-            $em->persist($todo);
+            $em->persist($task);
             $em->flush();
 
-            return $this->redirectToRoute('todo_create');
+            return $this->redirectToRoute('task_create');
         }
 
-        return $this->render('todo_crud/todo_create.html.twig', ['form' => $form->createView()]);
+        return $this->render('task_crud/task_create.html.twig', ['form' => $form->createView()]);
     }
 }

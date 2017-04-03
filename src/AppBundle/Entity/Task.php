@@ -5,12 +5,12 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Todo
+ * Task
  *
- * @ORM\Table(name="todo")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\TodoRepository")
+ * @ORM\Table(name="task")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\TaskRepository")
  */
-class Todo
+class Task
 {
     /**
      * @var integer
@@ -87,7 +87,7 @@ class Todo
      *
      * @param string $description
      *
-     * @return Todo
+     * @return Task
      */
     public function setDescription($description)
     {
@@ -117,11 +117,11 @@ class Todo
     }
 
     /**
-     * Set end date of Todo
+     * Set end date of Task
      *
      * @param \DateTime $endDate
      *
-     * @return Todo
+     * @return Task
      */
     public function setEndDate(\DateTime $endDate)
     {
@@ -131,7 +131,7 @@ class Todo
     }
 
     /**
-     * Get end date of Todo
+     * Get end date of Task
      *
      * @return \DateTime
      */
