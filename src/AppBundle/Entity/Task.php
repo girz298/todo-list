@@ -13,6 +13,12 @@ use AppBundle\Entity\TaskGroup;
  */
 class Task
 {
+
+    const IMPORTANT_URGENT = 1;         // DO NOW
+    const IMPORTANT_NOT_URGENT = 2;     // DECIDE WHEN TO DO IT
+    const NOT_IMPORTANT_URGENT = 3;     // DELEGATE IT AWAY
+    const NOT_IMPORTANT_NOT_URGENT = 4; // DELETE IT
+
     /**
      * @var integer
      *
@@ -58,6 +64,43 @@ class Task
     private $group = null;
 
     /**
+     * @ORM\Column(type="smallint")
+     */
+    private $status = 4;
+
+    /**
+     * @return integer
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param integer $status
+     * @return Task
+     */
+    public function setStatus($status)
+    {
+        $statuses = [
+            self::IMPORTANT_URGENT,
+            self::IMPORTANT_NOT_URGENT,
+            self::NOT_IMPORTANT_URGENT,
+            self::NOT_IMPORTANT_NOT_URGENT
+        ];
+
+        if (!in_array($status, $statuses)){
+            throw new \InvalidArgumentException(
+                "Invalid status. Status should be in " . join(', ', $statuses
+                ));
+        }
+
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
      * @return boolean
      */
     public function getStateFlag()
@@ -67,10 +110,14 @@ class Task
 
     /**
      * @param boolean $stateFlag
+     *
+     * @return Task
      */
     public function setStateFlag($stateFlag)
     {
         $this->stateFlag = $stateFlag;
+
+        return $this;
     }
 
 

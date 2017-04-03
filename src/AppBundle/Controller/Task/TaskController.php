@@ -50,7 +50,8 @@ class TaskController extends Controller
         $task = new Task();
         $task
             ->setDescription('some description')
-            ->setEndDate(new \DateTime());
+            ->setEndDate(new \DateTime())
+            ->setStatus(Task::IMPORTANT_URGENT);
 
         $task2 = new Task();
         $task2
