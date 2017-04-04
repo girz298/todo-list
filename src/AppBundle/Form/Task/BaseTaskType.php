@@ -20,6 +20,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 class BaseTaskType extends AbstractType
 {
     // TODO If TYPE_DAILY_GOAL we show status select box
+
+    // TODO If we use TYPE_WEEKLY_GOAL we gave User ability pick only week without day
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

@@ -24,7 +24,7 @@ class Task
     private $statuses = [
         self::STATUS_IMPORTANT_URGENT,
         self::STATUS_IMPORTANT_NOT_URGENT,
-        self::STATUS_NOT_IMPORTANT_URGENT,
+        self::STATUS_NOT_IMPORTANT_URGENT,     // DEFAULT
         self::STATUS_NOT_IMPORTANT_NOT_URGENT
     ];
 
@@ -109,14 +109,15 @@ class Task
 
     /**
      * @param mixed $type
+     * If type  is TYPE_DAILY_GOAL we are using STATUSES by Eisenhower
      * @return Task
      */
     public function setType($type)
     {
-        if (!in_array($type, $this->types)){
+        if (!in_array($type, $this->types)) {
             throw new \InvalidArgumentException(
-                "Invalid type. Status should be in " . join(', ', $this->types
-                ));
+                "Invalid type. Status should be in " . join(', ', $this->types)
+            );
         }
 
         $this->type = $type;
@@ -124,8 +125,6 @@ class Task
         if (!$this->getStatus() && $type === self::TYPE_DAILY_GOAL) {
             $this->setStatus(self::STATUS_NOT_IMPORTANT_URGENT);
         }
-
-
 
         return $this;
     }
@@ -144,13 +143,13 @@ class Task
      */
     public function setStatus($status)
     {
-        if($this->getType() !== self::TYPE_DAILY_GOAL) {
+        if ($this->getType() !== self::TYPE_DAILY_GOAL) {
             throw new \InvalidArgumentException('Statuses active only for DAILY_GOALS');
         }
-        if (!in_array($status, $this->statuses)){
+        if (!in_array($status, $this->statuses)) {
             throw new \InvalidArgumentException(
-                "Invalid status. Status should be in " . join(', ', $this->statuses
-                ));
+                "Invalid status. Status should be in " . join(', ', $this->statuses)
+            );
         }
 
         $this->status = $status;
