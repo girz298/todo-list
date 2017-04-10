@@ -90,7 +90,7 @@ class User implements UserInterface
      *
      * @return ArrayCollection
      */
-    public function getTasks()
+    public function getTaskGroups()
     {
         return $this->taskGroups;
     }
