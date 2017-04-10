@@ -1,0 +1,14 @@
+{% extends "task_base.html.twig" %}
+
+{% block body %}
+    <div style="height: 200px;"></div>
+    <div class="container">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+{% endblock %}

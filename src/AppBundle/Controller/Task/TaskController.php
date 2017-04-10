@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
 class TaskController extends Controller
@@ -17,6 +19,8 @@ class TaskController extends Controller
     /**
      * @param Request $request
      * @Route("/task/create", name="task_create")
+     * @Method({"POST","GET"})
+     * @Security("has_role('ROLE_USER')")
      * @return Response
      */
     public function createTodoAction(Request $request)
@@ -24,12 +28,16 @@ class TaskController extends Controller
         $em = $this->getDoctrine()->getManager();
         $form = $this->createForm(BaseTaskType::class);
         $form->handleRequest($request);
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         if ($form->isSubmitted()) {
-            $groupRepo = $em->getRepository('AppBundle:TaskGroup');
-            $taskGroup = $groupRepo->find(2);
+            $taskGroup = new TaskGroup();
+            $taskGroup
+                ->setUser($user)
+                ->setDescription('Daily');
             $task = new Task();
             $task
+                ->setGroup($taskGroup)
                 ->setDescription($form->get('description')->getData())
                 ->setEndDate($form->get('end_date')->getData())
                 ->setType(Task::TYPE_DAILY_GOAL);
@@ -42,38 +50,5 @@ class TaskController extends Controller
         }
 
         return $this->render('task_crud/task_create.html.twig', ['form' => $form->createView()]);
-    }
-
-    /**
-     * @Route("/task/group", name="task_group")
-     * @return Response
-     */
-    public function taskGroupAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $taskGroup = new TaskGroup();
-        $taskGroup->setDescription('Work');
-
-        $task = new Task();
-        $task
-            ->setDescription('some description')
-            ->setEndDate(new \DateTime())
-            ->setStatus(Task::STATUS_IMPORTANT_URGENT);
-
-        $task2 = new Task();
-        $task2
-            ->setDescription('some description')
-            ->setEndDate(new \DateTime());
-
-        $taskGroup->addTask($task);
-        $taskGroup->addTask($task2);
-
-        $em->persist($taskGroup);
-        $em->persist($task);
-        $em->persist($task2);
-        $em->flush();
-
-        return new Response('success!');
     }
 }

@@ -2,8 +2,10 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\TaskGroup;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * User
@@ -14,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     @ORM\Index(name="role", columns={"role"}),
  *     @ORM\Index(name="password", columns={"password"}),
  *     @ORM\Index(name="is_active", columns={"is_active"})})
- * @ORM\Entity(repositoryClass="CatalogBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
 class User implements UserInterface
 {
@@ -49,6 +51,51 @@ class User implements UserInterface
     private $role;
 
 
+    /**
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TaskGroup", mappedBy="user")
+     */
+    private $taskGroups;
+
+    /**
+     * Add task
+     *
+     * @param TaskGroup $taskGroup
+     *
+     * @return User
+     */
+    public function addTaskGroup(TaskGroup $taskGroup)
+    {
+        $this->taskGroups[] = $taskGroup;
+
+        $taskGroup->setUser($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove task
+     *
+     * @param TaskGroup $taskGroup
+     */
+    public function removeTaskGroup(TaskGroup $taskGroup)
+    {
+        $taskGroup->setUser(null);
+
+        $this->taskGroups->removeElement($taskGroup);
+    }
+
+    /**
+     * Get tasks
+     *
+     * @return ArrayCollection
+     */
+    public function getTasks()
+    {
+        return $this->taskGroups;
+    }
+
+
     // *     checkMX = true
     /**
      * @Assert\Email(
@@ -66,8 +113,7 @@ class User implements UserInterface
     public function __construct()
     {
         $this->isActive = true;
-        // may not be needed, see section on salt below
-        // $this->salt = md5(uniqid(null, true));
+        $this->taskGroups = new ArrayCollection();
     }
 
     /**
@@ -214,5 +260,7 @@ class User implements UserInterface
             'role' => $this->getRole()
         ];
     }
+
+
 
 }

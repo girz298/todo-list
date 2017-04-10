@@ -3,8 +3,8 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 use AppBundle\Entity\Task;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
@@ -33,6 +33,12 @@ class TaskGroup
      * @ORM\Column(name="description", type="string", length=30, nullable=false)
      */
     private $description;
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="taskGroups")
+     */
+    private $user;
 
     // TODO: connect TaskGroup to User
 
@@ -72,7 +78,7 @@ class TaskGroup
      *
      * @param Task $task
      */
-    public function removeTask(\AppBundle\Entity\Task $task)
+    public function removeTask(Task $task)
     {
         $task->setGroup(null);
 
@@ -111,5 +117,16 @@ class TaskGroup
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param User $user
+     * @return TaskGroup
+     */
+    public function setUser(User $user)
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }

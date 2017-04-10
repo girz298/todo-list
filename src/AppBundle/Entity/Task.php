@@ -87,7 +87,7 @@ class Task
     /**
      * @ORM\ManyToOne(targetEntity="TaskGroup", inversedBy="tasks")
      */
-    private $group = null;
+    private $group;
 
     /**
      * @ORM\Column(type="smallint", nullable=true)
