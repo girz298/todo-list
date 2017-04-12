@@ -983,12 +983,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
-                "reference": "5515c0fca85a8f2637243272f740ab1d0c67a8ab"
+                "reference": "3223796768f905276ecf70587f138bbc1bc3d8e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/5515c0fca85a8f2637243272f740ab1d0c67a8ab",
-                "reference": "5515c0fca85a8f2637243272f740ab1d0c67a8ab",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/3223796768f905276ecf70587f138bbc1bc3d8e8",
+                "reference": "3223796768f905276ecf70587f138bbc1bc3d8e8",
                 "shasum": ""
             },
             "type": "library",
@@ -1028,7 +1028,7 @@
                 "progress",
                 "upload"
             ],
-            "time": "2017-04-01 18:12:41"
+            "time": "2017-04-11 06:24:01"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -2075,16 +2075,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.2.6",
+            "version": "v3.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "b0f8a7fa4b8baadf9db299cb6ac87c96a8977dbe"
+                "reference": "1631040ea8fc5e0e405c00d35cbf2c0b7b555f64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/b0f8a7fa4b8baadf9db299cb6ac87c96a8977dbe",
-                "reference": "b0f8a7fa4b8baadf9db299cb6ac87c96a8977dbe",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/1631040ea8fc5e0e405c00d35cbf2c0b7b555f64",
+                "reference": "1631040ea8fc5e0e405c00d35cbf2c0b7b555f64",
                 "shasum": ""
             },
             "require": {
@@ -2215,7 +2215,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2017-03-10T18:35:48+00:00"
+            "time": "2017-04-05T12:52:29+00:00"
         },
         {
             "name": "twbs/bootstrap",
@@ -2388,7 +2388,7 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v3.2.6",
+            "version": "v3.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",

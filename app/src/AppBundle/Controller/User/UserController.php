@@ -52,7 +52,7 @@ class UserController extends Controller
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
         return $this->render(
-            'security/login.html.twig',
+            'anon/login.html.twig',
             [
                 'last_username' => $lastUsername,
                 'error' => $error,
@@ -140,7 +140,7 @@ class UserController extends Controller
                 return $this->redirectToRoute('forgot_password');
             }
         }
-        return $this->render('anon/forgot_password.html.twig', [
+        return $this->render('non/forgot_password.html.twig', [
             'form' => $form->createView()
         ]);
     }
