@@ -1,9 +1,12 @@
 <?php
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Task;
+use AppBundle\Entity\TaskGroup;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Doctrine\ORM\EntityRepository;
 use AppBundle\Entity\User;
+use Doctrine\ORM\Query\Expr\Join;
 
 use Symfony\Component\Form\Form;
 
@@ -19,33 +22,20 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
             ->getOneOrNullResult();
     }
 
-    public function getByPage($page, $per_page, $ordered_by, $direction)
+    /**
+     * @param Task $task
+     * @return User
+     */
+    public function getTaskCreatorUser(Task $task)
     {
-        if ($direction) {
-            $directionDQL = 'ASC';
-        } else {
-            $directionDQL = 'DESC';
-        }
-
-        $users = $this
+        $result = $this
             ->createQueryBuilder('u')
-            ->orderBy('u.' . $ordered_by, $directionDQL)
-            ->setFirstResult(($page-1)*$per_page)
-            ->setMaxResults($per_page)
+            ->select()
+            ->leftJoin('u.taskGroups', 'tg',Join::WITH, 'tg.user=u.id')
+            ->leftJoin('tg.tasks','tsk',Join::WITH, 'tsk.group=tg.id')
+            ->where('tsk.id='.$task->getId())
             ->getQuery()
             ->getResult();
-
-
-        return $users;
-    }
-
-
-    public function updateDataFromForm(Form $form, User $editable_user)
-    {
-        $editable_user->setEmail($form->get('email')->getData());
-        $editable_user->setIsActive($form->get('is_active')->getData());
-        $editable_user->setRole($form->get('role')->getData());
-        $this->_em->persist($editable_user);
-        $this->_em->flush();
+        return current($result);
     }
 }

@@ -116,7 +116,7 @@ class Task
     {
         if (!in_array($type, $this->types)) {
             throw new \InvalidArgumentException(
-                "Invalid type. Status should be in " . join(', ', $this->types)
+                "Invalid type. Type should be in " . join(', ', $this->types)
             );
         }
 
@@ -143,7 +143,7 @@ class Task
      */
     public function setStatus($status)
     {
-        if ($this->getType() !== self::TYPE_DAILY_GOAL) {
+        if ($this->getType() != self::TYPE_DAILY_GOAL) {
             throw new \InvalidArgumentException('Statuses active only for DAILY_GOALS');
         }
         if (!in_array($status, $this->statuses)) {
@@ -253,7 +253,7 @@ class Task
     }
 
     /**
-     * Set groupId
+     * Set group
      *
      * @param TaskGroup $group
      * @return Task
@@ -266,7 +266,7 @@ class Task
     }
 
     /**
-     * Get groupId
+     * Get group
      *
      * @return TaskGroup
      */

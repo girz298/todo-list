@@ -983,12 +983,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
-                "reference": "3223796768f905276ecf70587f138bbc1bc3d8e8"
+                "reference": "db72623616c73e6ed0ab3f00accf636847332491"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/3223796768f905276ecf70587f138bbc1bc3d8e8",
-                "reference": "3223796768f905276ecf70587f138bbc1bc3d8e8",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/db72623616c73e6ed0ab3f00accf636847332491",
+                "reference": "db72623616c73e6ed0ab3f00accf636847332491",
                 "shasum": ""
             },
             "type": "library",
@@ -1028,7 +1028,7 @@
                 "progress",
                 "upload"
             ],
-            "time": "2017-04-11 06:24:01"
+            "time": "2017-04-14 08:04:20"
         },
         {
             "name": "kriswallsmith/assetic",

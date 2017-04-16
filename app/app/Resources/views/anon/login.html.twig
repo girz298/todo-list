@@ -4,7 +4,10 @@
     <div style="height: 200px;"></div>
     <div class="container">
         <div class="col-md-3"></div>
-        <div class="col-md-6">
+        <div class="col-md-6" id="flash-messages">
+            <div class="alert alert-danger" id="bad-credentials" style="display: none"> <strong>Warning!</strong>
+                Bad Credentials!
+            </div>
             {% for flash_message in app.session.flashbag.get('notice') %}
                 <div class="alert alert-success" style="font-size: 16px;">
                     <b>
@@ -30,11 +33,38 @@
                            placeholder="Password" style="margin-bottom: 15px">
                 </div>
                 <input type="hidden" name="_target_path" value="/"/>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button id="submit_button" type="submit" class="btn btn-primary">Login</button>
                 <a href="{{ path('forgot_password') }}"
                    class="btn btn-warning" style="float: right;">Forgot password?</a>
             </form>
         </div>
         <div class="col-md-3"></div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var signInForm = $('#signin');
+        signInForm.submit(function (e) {
+            console.log(signInForm.serialize());
+            $.ajax({
+                url: '{{ path('login') }}',
+                type: "POST",
+                data: signInForm.serialize(),
+                success: function (result) {
+                    if (result.success) {
+                        if (result.code === 401) {
+                            $('#bad-credentials').show();
+                        }
+                    } else {
+                        location.reload();
+                    }
+                },
+                error: function (xhr, resp, text) {
+                    console.log(xhr, resp, text);
+                }
+            });
+            return false;
+        });
+    </script>
 {% endblock %}

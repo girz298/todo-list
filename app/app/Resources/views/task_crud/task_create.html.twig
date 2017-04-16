@@ -14,3 +14,34 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+
+    <script>
+        var signInForm = $("[name='base_task']");
+        signInForm.submit(function (e) {
+            console.log(signInForm.serialize());
+            $.ajax({
+                url: '{{ path('api_task_create') }}',
+                type: "POST",
+                data: {
+                    'description':  'Lalala',
+                    'type':         1,
+                    'status':       2
+                },
+                success: function (result) {
+                    if (result.success) {
+                        if (result.code === 201) {
+                            console.log('Task successfully created');
+                        }
+                    }
+                },
+                error: function (xhr, resp, text) {
+                    console.log(xhr, resp, text);
+                }
+            });
+            return false;
+        });
+    </script>
+
+{% endblock %}

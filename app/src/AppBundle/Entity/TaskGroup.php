@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\TaskGroupRepository")
  */
 class TaskGroup
 {
@@ -128,5 +129,13 @@ class TaskGroup
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+         return $this->user;
     }
 }

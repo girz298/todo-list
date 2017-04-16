@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Form\User\UserType;
 use AppBundle\Entity\User;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserController extends Controller
 {
@@ -48,9 +50,18 @@ class UserController extends Controller
         if ($authenticationUtils->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('task_create');
         }
+        /**@var AuthenticationUtils $authenticationUtils*/
         $authenticationUtils = $this->get('security.authentication_utils');
         $error = $authenticationUtils->getLastAuthenticationError();
+        if ($error) {
+            $errors = [
+                'success' => true,
+                'error' => $error->getMessage()
+            ];
+            return new JsonResponse($errors,401);
+        }
         $lastUsername = $authenticationUtils->getLastUsername();
+//        return new JsonResponse($error);
         return $this->render(
             'anon/login.html.twig',
             [
