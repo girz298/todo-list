@@ -51,17 +51,19 @@
                 url: '{{ path('login') }}',
                 type: "POST",
                 data: signInForm.serialize(),
-                success: function (result) {
-                    if (result.success) {
-                        if (result.code === 401) {
+                statusCode: {
+                    401: function (response) {
+                        if (response.responseJSON.success === true) {
                             $('#bad-credentials').show();
                         }
+                    }
+                },
+                success: function (result) {
+                    if (result.success) {
+
                     } else {
                         location.reload();
                     }
-                },
-                error: function (xhr, resp, text) {
-                    console.log(xhr, resp, text);
                 }
             });
             return false;
