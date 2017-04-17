@@ -5,7 +5,7 @@ namespace AppBundle\Controller\API\TaskGroup;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\TaskGroup;
 use AppBundle\Entity\User;
-use AppBundle\Helper\PrettyJsonResponse;
+use AppBundle\Component\PrettyJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,6 +13,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
+/**
+ * Class TaskGroupController
+ * @package AppBundle\Controller\API\TaskGroup
+ */
 class TaskGroupController extends Controller
 {
 

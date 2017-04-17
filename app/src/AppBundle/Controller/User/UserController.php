@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: doctor
- * Date: 01.09.16
- * Time: 1:34
- */
 
 namespace AppBundle\Controller\User;
 
@@ -22,6 +16,10 @@ use AppBundle\Entity\User;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * Class UserController
+ * @package AppBundle\Controller\User
+ */
 class UserController extends Controller
 {
     /**

@@ -7,7 +7,7 @@ use AppBundle\Entity\Task;
 use AppBundle\Entity\TaskGroup;
 use AppBundle\Entity\User;
 use AppBundle\Form\Task\BaseTaskType;
-use AppBundle\Helper\PrettyJsonResponse;
+use AppBundle\Component\PrettyJsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +17,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
+/**
+ * Class TaskController
+ * @package AppBundle\Controller\API\Task
+ */
 class TaskController extends Controller
 {
     /**
