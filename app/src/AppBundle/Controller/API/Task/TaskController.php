@@ -100,7 +100,11 @@ class TaskController extends Controller
     public function createTask(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+        if ($request->getContent()) {
+            $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+        } else {
+            $jsonRequest = $request;
+        }
         /**@var User $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         $taskGroup = $em->getRepository(TaskGroup::class)->getByUserAndId($user, $jsonRequest->get('group'));
@@ -113,27 +117,30 @@ class TaskController extends Controller
                     ->setStatus($jsonRequest->get('status') ? $jsonRequest->get('status') : $task->getStatus())
                     ->setEndDate(new \DateTime())
                     ->setStateFlag(true);
+
+                $taskGroup->addTask($task);
+                $em->persist($taskGroup);
+                $em->persist($task);
+                $em->flush();
             } catch (\Exception $exception) {
                 return new PrettyJsonResponse([
                     'success' => true,
                     'error' => $exception->getMessage()
-                ], 400);
+                ], 500);
             }
 
-            $taskGroup->addTask($task);
-            $em->persist($taskGroup);
-            $em->persist($task);
-            $em->flush();
+            $taskResponseGenerator = $this->get('app.task_response_arr_generator');
 
             return new PrettyJsonResponse([
                 'response' => true,
                 'status' => 'created'
-            ], 201);
+            ] + $taskResponseGenerator->generateTaskResponse($task),
+                201);
         } else {
             return new PrettyJsonResponse([
                 'response' => true,
-                'error' => 'TaskGroup not exist!'
-            ], 400);
+                'error' => 'TaskGroup not found!'
+            ], 404);
         }
     }
 
@@ -154,7 +161,11 @@ class TaskController extends Controller
             $em = $this->getDoctrine()->getManager();
             $taskCreator = $em->getRepository(User::class)->getTaskCreatorUser($task);
             if ($taskCreator->getId() === $user->getId()) {
-                $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+                if ($request->getContent()) {
+                    $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+                } else {
+                    $jsonRequest = $request;
+                }
                 /**@var TaskGroup $taskGroup */
                 $taskGroup = $em
                     ->getRepository(TaskGroup::class)
@@ -181,13 +192,15 @@ class TaskController extends Controller
                     return new PrettyJsonResponse([
                         'response' => true,
                         'error' => $exception->getMessage()
-                    ], 400);
+                    ], 500);
                 }
 
+                $taskResponseGenerator = $this->get('app.task_response_arr_generator');
                 return new PrettyJsonResponse([
                     'response' => true,
                     'status' => 'edited'
-                ], 200);
+                ] + $taskResponseGenerator->generateTaskResponse($task),
+                    200);
             }
             return new PrettyJsonResponse([
                 'response' => true,
@@ -197,7 +210,7 @@ class TaskController extends Controller
             return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'Task not exist!'
-            ], 400);
+            ], 404);
         }
     }
 
@@ -223,7 +236,7 @@ class TaskController extends Controller
                 return new PrettyJsonResponse([
                     'response' => true,
                     'status' => 'deleted'
-                ], 200);
+                ], 410);
             } else {
                 return new PrettyJsonResponse([
                     'response' => true,
@@ -233,8 +246,8 @@ class TaskController extends Controller
         } else {
             return new PrettyJsonResponse([
                 'response' => true,
-                'error' => 'Task not exist!'
-            ], 401);
+                'error' => 'Task not found!'
+            ], 404);
         }
     }
 
@@ -267,7 +280,7 @@ class TaskController extends Controller
             return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'Task not exist!'
-            ], 401);
+            ], 404);
         }
     }
 }
