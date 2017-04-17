@@ -2,13 +2,14 @@
 
 namespace Tests\AppBundle\Controller;
 
+use Tests\AppBundle\Base\WebUserTestCase;
 use Symfony\Component\BrowserKit\Client;
 
 /**
  * Class ApiTestCase
  * @package Tests\AppBundle\Controller
  */
-class ApiTestCase extends WebUserTestCase
+class ApiTaskTest extends WebUserTestCase
 {
     private $client;
 
