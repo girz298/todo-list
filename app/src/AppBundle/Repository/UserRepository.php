@@ -1,17 +1,23 @@
 <?php
+
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Task;
-use AppBundle\Entity\TaskGroup;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Doctrine\ORM\EntityRepository;
 use AppBundle\Entity\User;
 use Doctrine\ORM\Query\Expr\Join;
 
-use Symfony\Component\Form\Form;
-
+/**
+ * Class UserRepository
+ * @package AppBundle\Repository
+ */
 class UserRepository extends EntityRepository implements UserLoaderInterface
 {
+    /**
+     * @param string $username
+     * @return User
+     */
     public function loadUserByUsername($username)
     {
         return $this->createQueryBuilder('u')
@@ -31,9 +37,9 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
         $result = $this
             ->createQueryBuilder('u')
             ->select()
-            ->leftJoin('u.taskGroups', 'tg',Join::WITH, 'tg.user=u.id')
-            ->leftJoin('tg.tasks','tsk',Join::WITH, 'tsk.group=tg.id')
-            ->where('tsk.id='.$task->getId())
+            ->leftJoin('u.taskGroups', 'tg', Join::WITH, 'tg.user=u.id')
+            ->leftJoin('tg.tasks', 'tsk', Join::WITH, 'tsk.group=tg.id')
+            ->where('tsk.id=' . $task->getId())
             ->getQuery()
             ->getResult();
         return current($result);
