@@ -5,9 +5,8 @@ namespace AppBundle\Controller\API\TaskGroup;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\TaskGroup;
 use AppBundle\Entity\User;
+use AppBundle\Helper\PrettyJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -21,7 +20,7 @@ class TaskGroupController extends Controller
      * @Route("api/task-groups", name="api_task_groups_all")
      * @Method({"GET"})
      * @Security("has_role('ROLE_USER')")
-     * @return JsonResponse
+     * @return Response
      */
     public function getAllTaskGroups()
     {
@@ -37,7 +36,7 @@ class TaskGroupController extends Controller
                 'link' => $this->generateUrl('api_task_group', ['taskGroup' => $taskGroup->getId()], 0)
             ];
         }
-        return new JsonResponse($response);
+        return new PrettyJsonResponse($response);
     }
 
     /**
@@ -45,7 +44,7 @@ class TaskGroupController extends Controller
      * @Route("api/task-groups/{taskGroup}", requirements={"taskGroup" = "[0-9]+"}, name="api_task_group")
      * @Method({"GET"})
      * @Security("has_role('ROLE_USER')")
-     * @return JsonResponse
+     * @return Response
      */
     public function getTaskGroup(TaskGroup $taskGroup = null)
     {
@@ -55,22 +54,10 @@ class TaskGroupController extends Controller
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
             if ($taskGroup->getUser()->getId() === $user->getId()) {
                 $tasks = [];
+                $taskResponseGenerator = $this->get('app.task_response_arr_generator');
                 foreach ($taskGroup->getTasks() as $task) {
                     /**@var Task $task */
-                    $tasks[] = [
-                        'task_link' => $this->generateUrl(
-                            'api_task',
-                            ['task' => $task->getId()],
-                            0
-                        ),
-                        'data' => ['id' => $task->getId(),
-                            'description' => $task->getDescription(),
-                            'state_flag' => $task->getStateFlag(),
-                            'status' => $task->getStatus(),
-                            'type' => $task->getType(),
-                            'group' => $task->getGroup()->getId(),
-                        ]
-                    ];
+                    $tasks[] = $taskResponseGenerator->generateTaskResponse($task);
                 }
 
                 $response = [
@@ -85,15 +72,15 @@ class TaskGroupController extends Controller
                         'tasks' => $tasks
                     ]
                 ];
-                return new JsonResponse($response);
+                return new PrettyJsonResponse($response);
             } else {
-                return new JsonResponse([
+                return new PrettyJsonResponse([
                     'response' => true,
                     'error' => 'Not Allowed for this user!'
                 ], 401);
             }
         } else {
-            return new JsonResponse([
+            return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'TaskGroup not found.'
             ], 401);

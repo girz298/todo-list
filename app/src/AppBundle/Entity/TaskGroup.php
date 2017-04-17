@@ -41,8 +41,6 @@ class TaskGroup
      */
     private $user;
 
-    // TODO: connect TaskGroup to User
-
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
@@ -136,6 +134,6 @@ class TaskGroup
      */
     public function getUser()
     {
-         return $this->user;
+        return $this->user;
     }
 }

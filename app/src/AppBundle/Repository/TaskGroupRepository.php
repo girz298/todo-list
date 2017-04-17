@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: oem
- * Date: 16.04.17
- * Time: 21:00
- */
 
 namespace AppBundle\Repository;
 
@@ -13,6 +7,10 @@ use AppBundle\Entity\TaskGroup;
 use AppBundle\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Class TaskGroupRepository
+ * @package AppBundle\Repository
+ */
 class TaskGroupRepository extends EntityRepository
 {
 

@@ -7,9 +7,9 @@ use AppBundle\Entity\Task;
 use AppBundle\Entity\TaskGroup;
 use AppBundle\Entity\User;
 use AppBundle\Form\Task\BaseTaskType;
+use AppBundle\Helper\PrettyJsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -68,27 +68,21 @@ class TaskController extends Controller
         /**@var User $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         /**@var TaskGroup $taskGroup */
-        $response = [];
+        $taskGroups = [];
+        $taskResponseGenerator = $this->get('app.task_response_arr_generator');
         foreach ($user->getTaskGroups() as $taskGroup) {
             $tasks = [];
             foreach ($taskGroup->getTasks() as $task) {
                 /**@var Task $task */
-                $tasks[] = [
-                    'id' => $task->getId(),
-                    'description' => $task->getDescription(),
-                    'state_flag' => $task->getStateFlag(),
-                    'status' => $task->getStatus(),
-                    'type' => $task->getType()
-                ];
+                $tasks[] = $taskResponseGenerator->generateTaskResponse($task);
             }
-            $response[] = [
-                'response' => true,
+            $taskGroups[] = [
                 'id' => $taskGroup->getId(),
                 'description' => $taskGroup->getDescription(),
                 'tasks' => $tasks
             ];
         }
-        return new JsonResponse($response, 200);
+        return new PrettyJsonResponse(['task_groups' => $taskGroups], 200);
     }
 
 
@@ -111,12 +105,12 @@ class TaskController extends Controller
 
             try {
                 $task->setDescription($jsonRequest->get('description'))
-                    ->setType($jsonRequest->get('type'))
-                    ->setStatus($jsonRequest->get('status'))
+                    ->setType($jsonRequest->get('type') ? $jsonRequest->get('type') : $task->getType())
+                    ->setStatus($jsonRequest->get('status') ? $jsonRequest->get('status') : $task->getStatus())
                     ->setEndDate(new \DateTime())
                     ->setStateFlag(true);
             } catch (\Exception $exception) {
-                return new JsonResponse([
+                return new PrettyJsonResponse([
                     'success' => true,
                     'error' => $exception->getMessage()
                 ], 400);
@@ -127,12 +121,12 @@ class TaskController extends Controller
             $em->persist($task);
             $em->flush();
 
-            return new JsonResponse([
+            return new PrettyJsonResponse([
                 'response' => true,
                 'status' => 'created'
             ], 201);
         } else {
-            return new JsonResponse([
+            return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'TaskGroup not exist!'
             ], 400);
@@ -141,6 +135,7 @@ class TaskController extends Controller
 
     /**
      * @param $request
+     * @param Task $task
      * @Route("api/tasks/{task}", requirements={"task" = "[0-9]+"}, name="api_task_edit")
      * @Method({"PUT"})
      * @Security("has_role('ROLE_USER')")
@@ -159,19 +154,19 @@ class TaskController extends Controller
                 /**@var TaskGroup $taskGroup */
                 $taskGroup = $em
                     ->getRepository(TaskGroup::class)
-                    ->getByUserAndId($user, $jsonRequest->get('group')?$jsonRequest->get('group'):$task->getGroup()->getId());
+                    ->getByUserAndId($user, $jsonRequest->get('group') ? $jsonRequest->get('group') : $task->getGroup()->getId());
                 if ($jsonRequest->get('group') && !$taskGroup) {
-                    return new JsonResponse([
+                    return new PrettyJsonResponse([
                         'response' => true,
                         'error' => 'TaskGroup not exist!'
                     ], 400);
                 }
 
                 try {
-                    $task->setDescription($jsonRequest->get('description')?$jsonRequest->get('description'):$task->getDescription())
-                        ->setType($jsonRequest->get('type')?$jsonRequest->get('type'):$task->getType())
-                        ->setStatus($jsonRequest->get('status')?$jsonRequest->get('status'):$task->getStatus())
-                        ->setEndDate($jsonRequest->get('date')?$jsonRequest->get('date'):$task->getEndDate())
+                    $task->setDescription($jsonRequest->get('description') ? $jsonRequest->get('description') : $task->getDescription())
+                        ->setType($jsonRequest->get('type') ? $jsonRequest->get('type') : $task->getType())
+                        ->setStatus($jsonRequest->get('status') ? $jsonRequest->get('status') : $task->getStatus())
+                        ->setEndDate($jsonRequest->get('date') ? $jsonRequest->get('date') : $task->getEndDate())
                         ->setStateFlag(true);
 
                     $taskGroup->addTask($task);
@@ -179,23 +174,23 @@ class TaskController extends Controller
                     $em->persist($task);
                     $em->flush();
                 } catch (\Exception $exception) {
-                    return new JsonResponse([
+                    return new PrettyJsonResponse([
                         'response' => true,
                         'error' => $exception->getMessage()
                     ], 400);
                 }
 
-                return new JsonResponse([
+                return new PrettyJsonResponse([
                     'response' => true,
                     'status' => 'edited'
                 ], 200);
             }
-            return new JsonResponse([
+            return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'Not Allowed for this user!'
             ], 401);
         } else {
-            return new JsonResponse([
+            return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'Task not exist!'
             ], 400);
@@ -221,18 +216,18 @@ class TaskController extends Controller
             if ($taskCreator->getId() === $user->getId()) {
                 $em->remove($task);
                 $em->flush();
-                return new JsonResponse([
+                return new PrettyJsonResponse([
                     'response' => true,
                     'status' => 'deleted'
                 ], 200);
             } else {
-                return new JsonResponse([
+                return new PrettyJsonResponse([
                     'response' => true,
                     'error' => 'Not Allowed for this user!'
                 ], 401);
             }
         } else {
-            return new JsonResponse([
+            return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'Task not exist!'
             ], 401);
@@ -249,35 +244,23 @@ class TaskController extends Controller
     public function getTask(Task $task = null)
     {
         if ($task) {
-            $em = $this->getDoctrine()->getManager();
             /**@var User $user */
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
             $userRepo = $this->getDoctrine()->getManager()->getRepository(User::class);
             $taskCreator = $userRepo->getTaskCreatorUser($task);
-
             if ($taskCreator->getId() === $user->getId()) {
-                return new JsonResponse([
-                    'task_group_link' => $this->generateUrl(
-                        'api_task_group',
-                        ['taskGroup' => $task->getGroup()->getId()],
-                        0
-                    ),
-                    'data' => ['id' => $task->getId(),
-                        'description' => $task->getDescription(),
-                        'state_flag' => $task->getStateFlag(),
-                        'status' => $task->getStatus(),
-                        'type' => $task->getType(),
-                        'group' => $task->getGroup()->getId(),
-                    ],
-                ], 200);
+                $taskResponseGenerator = $this->get('app.task_response_arr_generator');
+                return new PrettyJsonResponse(
+                    ['response' => true] + $taskResponseGenerator->generateTaskResponse($task),
+                    200);
             } else {
-                return new JsonResponse([
+                return new PrettyJsonResponse([
                     'response' => true,
                     'error' => 'Not Allowed for this user!'
                 ], 401);
             }
         } else {
-            return new JsonResponse([
+            return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'Task not exist!'
             ], 401);

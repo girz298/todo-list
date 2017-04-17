@@ -1,4 +1,5 @@
 <?php
+
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -97,6 +98,7 @@ class User implements UserInterface
 
 
     // *     checkMX = true
+
     /**
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email.",
@@ -260,7 +262,4 @@ class User implements UserInterface
             'role' => $this->getRole()
         ];
     }
-
-
-
 }
