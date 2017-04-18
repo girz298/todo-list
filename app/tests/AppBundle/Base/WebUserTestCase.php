@@ -10,6 +10,24 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class WebUserTestCase extends WebTestCase
 {
+    protected $client;
+
+    /**
+     * ApiTaskGroupCreationTest constructor.
+     * @param null $name
+     * @param array $data
+     * @param string $dataName
+     */
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        $this->client = $this::createClient(['environment' => 'test']);
+        $user = $this->client->getContainer()->get('doctrine')
+            ->getRepository("AppBundle:User")
+            ->loadUserByUsername('girz298');
+        $this->logIn($this->client, $user);
+        parent::__construct($name, $data, $dataName);
+    }
+
     protected function logIn(Client $client, User $user)
     {
         $session = $client->getContainer()->get('session');

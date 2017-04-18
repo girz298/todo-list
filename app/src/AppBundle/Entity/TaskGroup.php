@@ -24,7 +24,7 @@ class TaskGroup
     /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Task", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Task", mappedBy="group", cascade={"persist"})
      */
     private $tasks;
 

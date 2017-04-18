@@ -86,6 +86,7 @@ class Task
 
     /**
      * @ORM\ManyToOne(targetEntity="TaskGroup", inversedBy="tasks")
+     * @ORM\JoinColumn(name="group_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $group;
 

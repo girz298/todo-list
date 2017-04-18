@@ -2,10 +2,14 @@
 
 namespace AppBundle\Controller\API\TaskGroup;
 
+
+use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\TaskGroup;
 use AppBundle\Entity\User;
 use AppBundle\Component\PrettyJsonResponse;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,26 +25,30 @@ class TaskGroupController extends Controller
 {
 
     /**
+     * @param Request $request
      * @Route("api/task-groups", name="api_task_groups_all")
      * @Method({"GET"})
      * @Security("has_role('ROLE_USER')")
      * @return Response
      */
-    public function getAllTaskGroups()
+    public function getAllTaskGroups(Request $request)
     {
         /**@var User $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        $response = [];
+        $response = [
+            'response' => true,
+            'links' => [
+                'self' => $this->generateUrl('api_task_groups_all', [], 0)
+            ],
+            'data' => []
+        ];
+        $includeTasksFlag = $request->get('includeTasks') ? true : false;
         /**@var TaskGroup $taskGroup */
+        $taskGroupResponseGenerator = $this->get('app.task_group_response_arr_generator');
         foreach ($user->getTaskGroups() as $taskGroup) {
-            $response[] = [
-                'response' => true,
-                'id' => $taskGroup->getId(),
-                'description' => $taskGroup->getDescription(),
-                'link' => $this->generateUrl('api_task_group', ['taskGroup' => $taskGroup->getId()], 0)
-            ];
+            $response['data'][] = $taskGroupResponseGenerator->generateTaskGroupResponse($taskGroup, $includeTasksFlag);
         }
-        return new PrettyJsonResponse($response);
+        return new PrettyJsonResponse($response, 200);
     }
 
     /**
@@ -57,26 +65,9 @@ class TaskGroupController extends Controller
             /**@var User $user */
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
             if ($taskGroup->getUser()->getId() === $user->getId()) {
-                $tasks = [];
-                $taskResponseGenerator = $this->get('app.task_response_arr_generator');
-                foreach ($taskGroup->getTasks() as $task) {
-                    /**@var Task $task */
-                    $tasks[] = $taskResponseGenerator->generateTaskResponse($task);
-                }
-
-                $response = [
-                    'task_group_link' => $this->generateUrl(
-                        'api_task_group',
-                        ['taskGroup' => $taskGroup->getId()],
-                        0
-                    ),
-                    'data' => [
-                        'id' => $taskGroup->getId(),
-                        'description' => $taskGroup->getDescription(),
-                        'tasks' => $tasks
-                    ]
-                ];
-                return new PrettyJsonResponse($response);
+                $taskGroupResponseGenerator = $this->get('app.task_group_response_arr_generator');
+                $response = ['response' => true];
+                return new PrettyJsonResponse($response + $taskGroupResponseGenerator->generateTaskGroupResponse($taskGroup, true));
             } else {
                 return new PrettyJsonResponse([
                     'response' => true,
@@ -87,7 +78,159 @@ class TaskGroupController extends Controller
             return new PrettyJsonResponse([
                 'response' => true,
                 'error' => 'TaskGroup not found.'
-            ], 401);
+            ], 404);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @Route("api/task-groups", requirements={"taskGroup" = "[0-9]+"}, name="api_task_groups_create")
+     * @Method({"POST"})
+     * @Security("has_role('ROLE_USER')")
+     * @return Response
+     */
+    public function createTaskGroup(Request $request)
+    {
+        if ($request->getContentType() === 'json') {
+            try {
+                $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+            } catch (\Exception $exception) {
+                return new PrettyJsonResponse([
+                    'success' => true,
+                    'error' => 'Bad Request!'
+                ], 500);
+            }
+        } else {
+            $jsonRequest = $request;
+        }
+
+        if ($jsonRequest->get('description')) {
+            try {
+                /**@var User $user */
+                $user = $this->container->get('security.token_storage')->getToken()->getUser();
+                $em = $this->getDoctrine()->getManager();
+                $taskGroup = new TaskGroup();
+                $taskGroup
+                    ->setUser($user)
+                    ->setDescription($jsonRequest->get('description'));
+                $em->persist($taskGroup);
+                $em->flush();
+            } catch (\Exception $exception) {
+                return new PrettyJsonResponse([
+                    'success' => true,
+                    'error' => $exception->getMessage()
+                ], 500);
+            }
+            return new PrettyJsonResponse([
+                'response' => true,
+                'status' => 'created'
+            ],
+                201);
+        } else {
+            return new PrettyJsonResponse([
+                'success' => true,
+                'error' => 'Description not valid!'
+            ], 500);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param TaskGroup $taskGroup
+     * @Route("api/task-groups/{taskGroup}", requirements={"taskGroup" = "[0-9]+"}, name="api_task_groups_edit")
+     * @Method({"PUT"})
+     * @Security("has_role('ROLE_USER')")
+     * @return Response
+     */
+    public function editTaskGroup(Request $request, TaskGroup $taskGroup = null)
+    {
+        if ($taskGroup) {
+            if ($request->getContentType() === 'json') {
+                try {
+                    $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+                } catch (\Exception $exception) {
+                    return new PrettyJsonResponse([
+                        'success' => true,
+                        'error' => 'Bad Request!'
+                    ], 500);
+                }
+            } else {
+                $jsonRequest = $request;
+            }
+
+            /**@var User $user */
+            $user = $this->container->get('security.token_storage')->getToken()->getUser();
+            if ($taskGroup->getUser()->getId() === $user->getId()) {
+                if ($jsonRequest->get('description')) {
+                    try {
+                        $em = $this->getDoctrine()->getManager();
+                        $taskGroup
+                            ->setDescription($jsonRequest->get('description') ? $jsonRequest->get('description') :
+                                $taskGroup->getDescription());
+                        $em->persist($taskGroup);
+                        $em->flush();
+                    } catch (\Exception $exception) {
+                        return new PrettyJsonResponse([
+                            'success' => true,
+                            'error' => $exception->getMessage()
+                        ], 500);
+                    }
+                    return new PrettyJsonResponse([
+                        'response' => true,
+                        'status' => 'edited'
+                    ],
+                        200);
+                } else {
+                    return new PrettyJsonResponse([
+                        'success' => true,
+                        'error' => 'Description not valid!'
+                    ], 500);
+                }
+            } else {
+                return new PrettyJsonResponse([
+                    'response' => true,
+                    'error' => 'Not Allowed for this user!'
+                ], 401);
+            }
+        } else {
+            return new PrettyJsonResponse([
+                'response' => true,
+                'error' => 'TaskGroup not found!'
+            ], 404);
+        }
+    }
+
+    /**
+     * @param TaskGroup $taskGroup
+     * @Route("api/task-groups/{taskGroup}", requirements={"taskGroup" = "[0-9]+"}, name="api_task_group_remove")
+     * @Method({"DELETE"})
+     * @Security("has_role('ROLE_USER')")
+     * @return Response
+     */
+    public function removeTaskGroup(TaskGroup $taskGroup = null)
+    {
+        if ($taskGroup) {
+            $em = $this->getDoctrine()->getManager();
+            /**@var User $user */
+            $user = $this->container->get('security.token_storage')->getToken()->getUser();
+            if ($taskGroup->getUser()->getId() === $user->getId()) {
+                $em->remove($taskGroup);
+                $em->flush();
+                return new PrettyJsonResponse([
+                    'response' => true,
+                    'status' => 'deleted'
+                ], 410);
+            } else {
+                return new PrettyJsonResponse([
+                    'response' => true,
+                    'error' => 'Not Allowed for this user!'
+                ], 401);
+            }
+        } else {
+            return new PrettyJsonResponse([
+                'response' => true,
+                'error' => 'TaskGroup not found!'
+            ], 404);
         }
     }
 }

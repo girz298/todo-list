@@ -11,3 +11,7 @@ services:
     app.task_response_arr_generator:
         class: AppBundle\Service\TaskResponseArrGenerator
         arguments: ["@router"]
+
+    app.task_group_response_arr_generator:
+        class: AppBundle\Service\TaskGroupResponseArrGenerator
+        arguments: ["@router", "@app.task_response_arr_generator"]

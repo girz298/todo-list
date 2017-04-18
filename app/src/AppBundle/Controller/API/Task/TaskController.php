@@ -81,9 +81,18 @@ class TaskController extends Controller
                 $tasks[] = $taskResponseGenerator->generateTaskResponse($task);
             }
             $taskGroups[] = [
-                'id' => $taskGroup->getId(),
-                'description' => $taskGroup->getDescription(),
-                'tasks' => $tasks
+                'links' => [
+                    'self' => $this->generateUrl(
+                        'api_task_group',
+                        ['taskGroup' => $taskGroup->getId()],
+                        0
+                    )
+                ],
+                'data' => [
+                    'id' => $taskGroup->getId(),
+                    'description' => $taskGroup->getDescription(),
+                    'tasks' => $tasks
+                ],
             ];
         }
         return new PrettyJsonResponse(['task_groups' => $taskGroups], 200);
@@ -99,15 +108,30 @@ class TaskController extends Controller
      */
     public function createTask(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        if ($request->getContent()) {
-            $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+        if ($request->getContentType() === 'json') {
+            try {
+                $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
+            } catch (\Exception $exception) {
+                return new PrettyJsonResponse([
+                    'success' => true,
+                    'error' => 'Bad Request!'
+                ], 500);
+            }
         } else {
             $jsonRequest = $request;
         }
         /**@var User $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        $taskGroup = $em->getRepository(TaskGroup::class)->getByUserAndId($user, $jsonRequest->get('group'));
+        $em = $this->getDoctrine()->getManager();
+        if ($jsonRequest->get('group')) {
+            $taskGroup = $em->getRepository(TaskGroup::class)->getByUserAndId($user, $jsonRequest->get('group'));
+        } else {
+            return new PrettyJsonResponse([
+                'success' => true,
+                'error' => 'Missing "group"'
+            ], 500);
+        }
+
         if ($taskGroup) {
             $task = new Task();
 
@@ -173,8 +197,8 @@ class TaskController extends Controller
                 if ($jsonRequest->get('group') && !$taskGroup) {
                     return new PrettyJsonResponse([
                         'response' => true,
-                        'error' => 'TaskGroup not exist!'
-                    ], 400);
+                        'error' => 'TaskGroup not found!'
+                    ], 404);
                 }
 
                 try {
@@ -209,7 +233,7 @@ class TaskController extends Controller
         } else {
             return new PrettyJsonResponse([
                 'response' => true,
-                'error' => 'Task not exist!'
+                'error' => 'Task not found!'
             ], 404);
         }
     }
@@ -279,7 +303,7 @@ class TaskController extends Controller
         } else {
             return new PrettyJsonResponse([
                 'response' => true,
-                'error' => 'Task not exist!'
+                'error' => 'Task not found!'
             ], 404);
         }
     }
