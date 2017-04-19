@@ -96,14 +96,14 @@ class TaskGroupController extends Controller
                 $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
             } catch (\Exception $exception) {
                 return new PrettyJsonResponse([
-                    'success' => true,
+                    'response' => true,
                     'error' => 'Bad Request!'
-                ], 500);
+                ], 400);
             }
         } else {
             $jsonRequest = $request;
         }
-
+        // TODO: Use validator->validate and Assert in Entity
         if ($jsonRequest->get('description')) {
             try {
                 /**@var User $user */
@@ -117,9 +117,9 @@ class TaskGroupController extends Controller
                 $em->flush();
             } catch (\Exception $exception) {
                 return new PrettyJsonResponse([
-                    'success' => true,
+                    'response' => true,
                     'error' => $exception->getMessage()
-                ], 500);
+                ], 400);
             }
             return new PrettyJsonResponse([
                 'response' => true,
@@ -130,7 +130,7 @@ class TaskGroupController extends Controller
             return new PrettyJsonResponse([
                 'success' => true,
                 'error' => 'Description not valid!'
-            ], 500);
+            ], 400);
         }
     }
 
@@ -150,9 +150,9 @@ class TaskGroupController extends Controller
                     $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
                 } catch (\Exception $exception) {
                     return new PrettyJsonResponse([
-                        'success' => true,
+                        'response' => true,
                         'error' => 'Bad Request!'
-                    ], 500);
+                    ], 400);
                 }
             } else {
                 $jsonRequest = $request;
@@ -171,9 +171,9 @@ class TaskGroupController extends Controller
                         $em->flush();
                     } catch (\Exception $exception) {
                         return new PrettyJsonResponse([
-                            'success' => true,
+                            'response' => true,
                             'error' => $exception->getMessage()
-                        ], 500);
+                        ], 400);
                     }
                     return new PrettyJsonResponse([
                         'response' => true,
@@ -182,9 +182,9 @@ class TaskGroupController extends Controller
                         200);
                 } else {
                     return new PrettyJsonResponse([
-                        'success' => true,
+                        'response' => true,
                         'error' => 'Description not valid!'
-                    ], 500);
+                    ], 400);
                 }
             } else {
                 return new PrettyJsonResponse([

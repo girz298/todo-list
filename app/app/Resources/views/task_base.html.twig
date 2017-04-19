@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
     {% endstylesheets %}
 
-    <title>{% block title %}Todo-List{% endblock %}</title>
+    <title>{% block title %}{{ project_title }}{% endblock %}</title>
     {% block stylesheets %}{% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
 

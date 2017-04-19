@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\User;
 
+use AppBundle\Component\PrettyJsonResponse;
 use AppBundle\Entity\ForgotPassword;
 use AppBundle\Form\User\ForgotPasswordType;
 use AppBundle\Form\User\ResetPasswordType;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Form\User\UserType;
 use AppBundle\Entity\User;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -31,82 +33,11 @@ class UserController extends Controller
     {
         $authenticationUtils = $this->get('security.authorization_checker');
         if ($authenticationUtils->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('task_create');
+            return $this->redirectToRoute('api_tasks_all');
         }
         return $this->render('anon/index.html.twig');
     }
 
-    /**
-     * @param Post
-     * @Route("/login", name="login")
-     * @Method({"POST","GET"})
-     * @return Response
-     */
-    public function loginAction()
-    {
-        $authenticationUtils = $this->get('security.authorization_checker');
-        if ($authenticationUtils->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('task_create');
-        }
-        /**@var AuthenticationUtils $authenticationUtils*/
-        $authenticationUtils = $this->get('security.authentication_utils');
-        $error = $authenticationUtils->getLastAuthenticationError();
-        if ($error) {
-            $errors = [
-                'success' => true,
-                'error' => $error->getMessage()
-            ];
-            return new JsonResponse($errors,401);
-        }
-        $lastUsername = $authenticationUtils->getLastUsername();
-//        return new JsonResponse($error);
-        return $this->render(
-            'anon/login.html.twig',
-            [
-                'last_username' => $lastUsername,
-                'error' => $error,
-            ]
-        );
-    }
-
-    /**
-     * @param Request $request
-     * @Route("/register", name="register")
-     * @Method({"GET","POST"})
-     * @return Response
-     */
-    public function registerAction(Request $request)
-    {
-        $authenticationUtils = $this->get('security.authorization_checker');
-        if ($authenticationUtils->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('task_create');
-        }
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $em = $this->getDoctrine()->getManager();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-//            $user = $form->getData();
-            $user->setUsername($form->get('username')->getData());
-            $encoder = $this->get('security.password_encoder');
-            $user->setPassword($encoder->encodePassword(
-                $user,
-                $form->get('password')->getData()
-            ));
-            $user->setIsActive(true);
-            $user->setRole('ROLE_USER');
-            $em->persist($user);
-            $em->flush();
-            return $this->redirectToRoute('login');
-
-        }
-
-        return $this->render('anon/register.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
 
     /**
      * @param $request
@@ -158,7 +89,7 @@ class UserController extends Controller
      * @param $request
      * @param $hash
      * @Route(
-     *     "/resetpassword/{hash}",
+     *     "/reset-password/{hash}",
      *     name="reset_password"
      * )
      * @Method({"GET","POST"})

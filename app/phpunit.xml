@@ -13,14 +13,18 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <file>tests/AppBundle/API/TaskGroup/ApiTaskGroupCreationTest.php</file>
-            <file>tests/AppBundle/API/Task/ApiTaskCreationTest.php</file>
-            <file>tests/AppBundle/API/Task/ApiTaskEditingTest.php</file>
-            <file>tests/AppBundle/API/Task/ApiTaskRemovingTest.php</file>
-            <file>tests/AppBundle/API/TaskGroup/ApiTaskGroupEditingTest.php</file>
-            <file>tests/AppBundle/API/TaskGroup/ApiTaskGroupRemovingTest.php</file>
-            <!--<file>tests/AppBundle/API/ApiTaskTest.php</file>-->
+        <testsuite name="User Test Suite">
+            <!--Do not run with API test suite -->
+            <!--First run this after run API-->
+            <file>tests/AppBundle/API/User/ApiUserCreationTest.php</file>
+        </testsuite>
+        <testsuite name="Api Test Suite">
+            <!--<file>tests/AppBundle/API/TaskGroup/ApiTaskGroupCreationTest.php</file>-->
+            <!--<file>tests/AppBundle/API/Task/ApiTaskCreationTest.php</file>-->
+            <!--<file>tests/AppBundle/API/Task/ApiTaskEditingTest.php</file>-->
+            <!--<file>tests/AppBundle/API/Task/ApiTaskRemovingTest.php</file>-->
+            <!--<file>tests/AppBundle/API/TaskGroup/ApiTaskGroupEditingTest.php</file>-->
+            <!--<file>tests/AppBundle/API/TaskGroup/ApiTaskGroupRemovingTest.php</file>-->
         </testsuite>
     </testsuites>
 

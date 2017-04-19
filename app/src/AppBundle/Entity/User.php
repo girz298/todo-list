@@ -97,9 +97,8 @@ class User implements UserInterface
     }
 
 
-    // *     checkMX = true
-
     /**
+     * @Assert\NotBlank()
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email.",
      * )
@@ -114,7 +113,8 @@ class User implements UserInterface
 
     public function __construct()
     {
-        $this->isActive = true;
+        $this->setIsActive(true);
+        $this->setRole('ROLE_USER');
         $this->taskGroups = new ArrayCollection();
     }
 

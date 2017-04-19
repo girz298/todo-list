@@ -23,6 +23,6 @@ class ApiTaskGroupCreationTest extends WebUserTestCase
             'blabla' => 'Test'
         ]);
         echo "Checking status code for NOT valid request:\n";
-        $this->assertEquals(500, $this->client->getResponse()->getStatusCode(), 'Status code not correct!');
+        $this->assertEquals(400, $this->client->getResponse()->getStatusCode(), 'Status code not correct!');
     }
 }

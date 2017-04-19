@@ -23,7 +23,7 @@ class WebUserTestCase extends WebTestCase
         $this->client = $this::createClient(['environment' => 'test']);
         $user = $this->client->getContainer()->get('doctrine')
             ->getRepository("AppBundle:User")
-            ->loadUserByUsername('girz298');
+            ->loadUserByUsername($this->client->getContainer()->getParameter('test_username'));
         $this->logIn($this->client, $user);
         parent::__construct($name, $data, $dataName);
     }

@@ -6,8 +6,8 @@ namespace AppBundle\Controller\API\Task;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\TaskGroup;
 use AppBundle\Entity\User;
-use AppBundle\Form\Task\BaseTaskType;
 use AppBundle\Component\PrettyJsonResponse;
+use AppBundle\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,44 +24,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class TaskController extends Controller
 {
     /**
-     * @param Request $request
-     * @Route("/task/create", name="task_create")
-     * @Method({"POST","GET"})
-     * @Security("has_role('ROLE_USER')")
-     * @return Response
-     */
-    public function createTodoAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $form = $this->createForm(BaseTaskType::class);
-        $form->handleRequest($request);
-        /**@var User $user */
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
-
-
-        if ($form->isSubmitted()) {
-            $taskGroup = new TaskGroup();
-            $taskGroup
-                ->setUser($user)
-                ->setDescription('Daily');
-            $task = new Task();
-            $task
-                ->setGroup($taskGroup)
-                ->setDescription($form->get('description')->getData())
-                ->setEndDate($form->get('end_date')->getData())
-                ->setType(Task::TYPE_DAILY_GOAL);
-            $taskGroup->addTask($task);
-            $em->persist($taskGroup);
-            $em->persist($task);
-            $em->flush();
-
-            return $this->redirectToRoute('task_create');
-        }
-
-        return $this->render('task_crud/task_create.html.twig', ['form' => $form->createView()]);
-    }
-
-    /**
      * @Route("api/tasks", name="api_tasks_all")
      * @Method({"GET"})
      * @Security("has_role('ROLE_USER')")
@@ -72,30 +34,22 @@ class TaskController extends Controller
         /**@var User $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         /**@var TaskGroup $taskGroup */
-        $taskGroups = [];
         $taskResponseGenerator = $this->get('app.task_response_arr_generator');
+        $tasks = [
+            'response' => true,
+            'links' => [
+                'self' => $this->generateUrl('api_tasks_all', [], 0)
+            ],
+            'data' => []
+        ];
         foreach ($user->getTaskGroups() as $taskGroup) {
-            $tasks = [];
+
             foreach ($taskGroup->getTasks() as $task) {
                 /**@var Task $task */
-                $tasks[] = $taskResponseGenerator->generateTaskResponse($task);
+                $tasks['data'][] = $taskResponseGenerator->generateTaskResponse($task);
             }
-            $taskGroups[] = [
-                'links' => [
-                    'self' => $this->generateUrl(
-                        'api_task_group',
-                        ['taskGroup' => $taskGroup->getId()],
-                        0
-                    )
-                ],
-                'data' => [
-                    'id' => $taskGroup->getId(),
-                    'description' => $taskGroup->getDescription(),
-                    'tasks' => $tasks
-                ],
-            ];
         }
-        return new PrettyJsonResponse(['task_groups' => $taskGroups], 200);
+        return new PrettyJsonResponse($tasks, 200);
     }
 
 
@@ -113,9 +67,9 @@ class TaskController extends Controller
                 $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
             } catch (\Exception $exception) {
                 return new PrettyJsonResponse([
-                    'success' => true,
+                    'response' => true,
                     'error' => 'Bad Request!'
-                ], 500);
+                ], 400);
             }
         } else {
             $jsonRequest = $request;
@@ -127,9 +81,9 @@ class TaskController extends Controller
             $taskGroup = $em->getRepository(TaskGroup::class)->getByUserAndId($user, $jsonRequest->get('group'));
         } else {
             return new PrettyJsonResponse([
-                'success' => true,
+                'response' => true,
                 'error' => 'Missing "group"'
-            ], 500);
+            ], 400);
         }
 
         if ($taskGroup) {
@@ -148,9 +102,9 @@ class TaskController extends Controller
                 $em->flush();
             } catch (\Exception $exception) {
                 return new PrettyJsonResponse([
-                    'success' => true,
+                    'response' => true,
                     'error' => $exception->getMessage()
-                ], 500);
+                ], 400);
             }
 
             $taskResponseGenerator = $this->get('app.task_response_arr_generator');
@@ -202,6 +156,7 @@ class TaskController extends Controller
                 }
 
                 try {
+                    // TODO: Use validator->validate and Assert in Entity
                     $task->setDescription($jsonRequest->get('description') ? $jsonRequest->get('description') : $task->getDescription())
                         ->setType($jsonRequest->get('type') ? $jsonRequest->get('type') : $task->getType())
                         ->setStatus($jsonRequest->get('status') ? $jsonRequest->get('status') : $task->getStatus())
@@ -216,7 +171,7 @@ class TaskController extends Controller
                     return new PrettyJsonResponse([
                         'response' => true,
                         'error' => $exception->getMessage()
-                    ], 500);
+                    ], 400);
                 }
 
                 $taskResponseGenerator = $this->get('app.task_response_arr_generator');
@@ -288,6 +243,7 @@ class TaskController extends Controller
             /**@var User $user */
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
             $userRepo = $this->getDoctrine()->getManager()->getRepository(User::class);
+            /**@var UserRepository $userRepo*/
             $taskCreator = $userRepo->getTaskCreatorUser($task);
             if ($taskCreator->getId() === $user->getId()) {
                 $taskResponseGenerator = $this->get('app.task_response_arr_generator');
