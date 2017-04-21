@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    {% stylesheets
+        '@bootstrap_css_map'
+        '@bootstrap_css'
+        '@fileinput_css'
+    %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+    <title>{% block title %}{{ project_title }}{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+
+</head>
+<body>
+
+<a href="{{ path('logout') }}" class="btn btn-danger">Logout</a>
+
+{% block body %}
+{% endblock %}
+
+{% javascripts
+    '@jquery'
+    '@bootstrap_js'
+    '@canvas_to_blob_plugin_js'
+    '@sortable_plugin_js'
+    '@purify_plugin_js'
+    '@fileinput_js'
+%}
+<script type="text/javascript" src="{{ asset_url }}"></script>
+{% endjavascripts %}
+{% block javascripts %}{% endblock %}
+</body>
+</html>

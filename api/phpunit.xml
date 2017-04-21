@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.8/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="app/autoload.php"
+>
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <server name="KERNEL_DIR" value="app/" />
+    </php>
+
+    <testsuites>
+        <testsuite name="User Test Suite">
+            <!--Do not run with API test suite -->
+            <!--First run this after run API-->
+            <file>tests/AppBundle/API/User/ApiUserCreationTest.php</file>
+        </testsuite>
+        <testsuite name="Api Test Suite">
+            <!--<file>tests/AppBundle/API/TaskGroup/ApiTaskGroupCreationTest.php</file>-->
+            <!--<file>tests/AppBundle/API/Task/ApiTaskCreationTest.php</file>-->
+            <!--<file>tests/AppBundle/API/Task/ApiTaskEditingTest.php</file>-->
+            <!--<file>tests/AppBundle/API/Task/ApiTaskRemovingTest.php</file>-->
+            <!--<file>tests/AppBundle/API/TaskGroup/ApiTaskGroupEditingTest.php</file>-->
+            <!--<file>tests/AppBundle/API/TaskGroup/ApiTaskGroupRemovingTest.php</file>-->
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>src</directory>
+            <exclude>
+                <directory>src/*Bundle/Resources</directory>
+                <directory>src/*/*Bundle/Resources</directory>
+                <directory>src/*/Bundle/*Bundle/Resources</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

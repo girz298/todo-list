@@ -1,0 +1,47 @@
+{% extends 'task_base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row" style="height: 120px;"></div>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+
+    <script>
+        var signInForm = $("[name='base_task']");
+        signInForm.submit(function (e) {
+            console.log(signInForm.serialize());
+            $.ajax({
+                url: '{{ path('api_task_create') }}',
+                type: "POST",
+                data: {
+                    'description':  'Lalala',
+                    'type':         1,
+                    'status':       2
+                },
+                success: function (result) {
+                    if (result.success) {
+                        if (result.code === 201) {
+                            console.log('Task successfully created');
+                        }
+                    }
+                },
+                error: function (xhr, resp, text) {
+                    console.log(xhr, resp, text);
+                }
+            });
+            return false;
+        });
+    </script>
+
+{% endblock %}
