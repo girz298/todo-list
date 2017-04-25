@@ -13,14 +13,14 @@ class ApiUserCreationTest extends WebTestCase
     public function testUserCreation(){
         $client = $this::createClient(['environment' => 'test']);
         $username = $client->getContainer()->getParameter('test_username');
-        $client->request('GET', 'logout');
+        $client->request('GET', '/api/logout');
         $user = $client->getContainer()->get('doctrine')
             ->getRepository("AppBundle:User")
             ->loadUserByUsername($client->getContainer()->getParameter('test_username'));
         if ($user){
             echo 'This User already exist!';
         } else {
-            $client->request('POST', 'register', [
+            $client->request('POST', '/api/register', [
                 'username' => $username,
                 'password' => '123456',
                 'email' => $username . '@gmail.com'
@@ -35,9 +35,9 @@ class ApiUserCreationTest extends WebTestCase
         $client = $this::createClient(['environment' => 'test']);
         $username = $client->getContainer()->getParameter('test_username');
 
-        $client->request('GET', 'logout');
+        $client->request('GET', '/api/logout');
 
-        $client->request('POST', 'register', [
+        $client->request('POST', '/api/register', [
             'username' => $username
         ]);
 
@@ -48,9 +48,9 @@ class ApiUserCreationTest extends WebTestCase
         $client = $this::createClient(['environment' => 'test']);
         $username = $client->getContainer()->getParameter('test_username');
 
-        $client->request('GET', 'logout');
+        $client->request('GET', '/api/logout');
 
-        $client->request('POST', 'register', [
+        $client->request('POST', '/api/register', [
             'username' => $username,
             'password' => '123456',
             'email' => $username . '@gmail.com'

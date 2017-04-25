@@ -1,5 +1,5 @@
 logout:
-    path: /logout
+    path: /api/logout
 
 app:
     resource: "@AppBundle/Controller/"
