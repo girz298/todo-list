@@ -21,7 +21,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class UserApiController extends Controller
 {
     /**
-     * @Route("login", name="login")
+     * @Route("api/login", name="login")
      * @Method({"POST"})
      * @return Response
      */
@@ -59,7 +59,7 @@ class UserApiController extends Controller
 
     /**
      * @param Request $request
-     * @Route("register", name="register")
+     * @Route("api/register", name="register")
      * @Method({"POST"})
      * @return Response
      */

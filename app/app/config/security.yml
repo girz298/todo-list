@@ -36,15 +36,15 @@ security:
             provider: our_db_provider
 
             form_login:
-                login_path: login
-                check_path: login
+                login_path: /api/login
+                check_path: /api/login
 
             logout:
-                path: /logout
+                path: /api/logout
                 target: /
 
         login_firewall:
-            pattern:   ^/login$
+            pattern:   ^api/login$
             anonymous: ~
         secured_area:
             pattern:    ^/
