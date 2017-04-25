@@ -36,7 +36,7 @@ security:
             provider: our_db_provider
 
             form_login:
-                login_path: /api/login
+                login_path: /api
                 check_path: /api/login
 
             logout:
