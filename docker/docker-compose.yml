@@ -31,27 +31,17 @@ db:
     volumes:
         - ./db:/var/lib/mysql
 
-web:
-    container_name: todo-web
+proxy:
+    container_name: todo-proxy
     image: nginx
     ports:
         - 80:80
     volumes:
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-        - ./nginx/web.conf:/etc/nginx/conf.d/default.conf
+        - ./nginx/proxy.conf:/etc/nginx/conf.d/default.conf
     links:
         - angular-2
-
-api:
-    container_name: todo-api
-    image: nginx
-    ports:
-        - 8000:80
-    links:
         - php
-    volumes:
-        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-        - ./nginx/api.conf:/etc/nginx/conf.d/default.conf
 
 composer:
     container_name: todo-composer
