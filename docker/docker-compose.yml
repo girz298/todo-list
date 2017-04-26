@@ -27,7 +27,7 @@ db:
     environment:
         MYSQL_DATABASE: symfony
         MYSQL_USER: root
-        MYSQL_PASSWORD: pass
+        MYSQL_ROOT_PASSWORD: pass
     volumes:
         - ./db:/var/lib/mysql
 
