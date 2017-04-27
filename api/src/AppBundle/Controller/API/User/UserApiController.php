@@ -110,6 +110,10 @@ class UserApiController extends Controller
                     ], 409);
 
                 }
+                return new PrettyJsonResponse([
+                    'response' => true,
+                    'error' => $exception->getMessage(),
+                ], 502);
             }
             return new PrettyJsonResponse([
                 'response' => true,

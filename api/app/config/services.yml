@@ -8,10 +8,14 @@ services:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
 
+    app.amazing_route_generator:
+        class: AppBundle\Service\AmazingRouteGenerator
+        parent: router
+
     app.task_response_arr_generator:
         class: AppBundle\Service\TaskResponseArrGenerator
-        arguments: ["@router"]
+        arguments: ["@app.amazing_route_generator"]
 
     app.task_group_response_arr_generator:
         class: AppBundle\Service\TaskGroupResponseArrGenerator
-        arguments: ["@router", "@app.task_response_arr_generator"]
+        arguments: ["@app.amazing_route_generator", "@app.task_response_arr_generator"]

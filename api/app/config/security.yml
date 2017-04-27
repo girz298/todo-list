@@ -44,7 +44,7 @@ security:
                 target: /
 
         login_firewall:
-            pattern:   ^api/login$
+            pattern:   ^/api/login$
             anonymous: ~
         secured_area:
             pattern:    ^/
