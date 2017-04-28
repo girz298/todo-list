@@ -17,7 +17,7 @@ angular-2:
     volumes:
         - ../web:/app
     working_dir: /app
-    command: npm start
+    command: bash -c "npm install && npm start"
 
 db:
     container_name: todo-db
