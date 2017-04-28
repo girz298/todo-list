@@ -1,9 +1,6 @@
-/app/config/parameters.yml
-/build/
 /var/*
 !/var/cache
 /var/cache/*
-!var/cache/.gitkeep
 !/var/logs
 /var/logs/*
 !var/logs/.gitkeep
@@ -11,16 +8,12 @@
 /var/sessions/*
 !var/sessions/.gitkeep
 !var/SymfonyRequirements.php
-/vendor/
 /web/bundles/
 .idea/
 composer.phar
-/src/CatalogBundle/Entity/*.php~
 /web/assetic/
 /web/css/
 /web/fonts/
 /web/js/
-/web/uploads/
-project_access.log
-project_error.log
+composer.lock
 
