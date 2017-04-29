@@ -1,11 +1,12 @@
 php:
     container_name: todo-php
-    build: php-fpm
+    build: php
+    working_dir: /app
     volumes:
         - ../api:/app
-        - ./php-fpm/php.ini:/usr/local/etc/php/php.ini
-        - ./php-fpm/timezone.ini:/usr/local/etc/php/conf.d/timezone.ini
-        - ./php-fpm/symfony.pool.conf:/etc/php5/fpm/pool.d/symfony.pool.conf
+        - ./php/php.ini:/usr/local/etc/php/php.ini
+        - ./php/timezone.ini:/usr/local/etc/php/conf.d/timezone.ini
+        - ./php/pool.conf:/etc/php5/fpm/pool.d/symfony.pool.conf
     working_dir: /app
     links:
         - db
