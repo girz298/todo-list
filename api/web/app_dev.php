@@ -3,6 +3,7 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
 use AppBundle\Component\Kernel\JsonRequest;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 // If you don't want to setup permissions the proper way, just uncomment the following PHP line
 // read http://symfony.com/doc/current/setup.html#checking-symfony-application-configuration-and-setup
@@ -46,6 +47,12 @@ Request::setFactory(function (
 $kernel = new AppKernel('dev', true);
 $kernel->loadClassCache();
 $request = Request::createFromGlobals();
+
+$jsonRequestContent = json_decode($request->getContent(), true);
+if (json_last_error() == JSON_ERROR_NONE) {
+    $request->request = new ParameterBag($jsonRequestContent);
+}
+
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);
