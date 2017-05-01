@@ -3,6 +3,7 @@
 namespace AppBundle\Controller\API\TaskGroup;
 
 
+use AppBundle\Controller\API\ApiController;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Task;
 use AppBundle\Entity\TaskGroup;
@@ -21,7 +22,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  * Class TaskGroupController
  * @package AppBundle\Controller\API\TaskGroup
  */
-class TaskGroupController extends Controller
+class TaskGroupController extends ApiController
 {
 
     /**
@@ -91,20 +92,8 @@ class TaskGroupController extends Controller
      */
     public function createTaskGroup(Request $request)
     {
-        if ($request->getContentType() === 'json') {
-            try {
-                $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
-            } catch (\Exception $exception) {
-                return new PrettyJsonResponse([
-                    'response' => true,
-                    'error' => 'Bad Request!'
-                ], 400);
-            }
-        } else {
-            $jsonRequest = $request;
-        }
         // TODO: Use validator->validate and Assert in Entity
-        if ($jsonRequest->get('description')) {
+        if ($request->get('description')) {
             try {
                 /**@var User $user */
                 $user = $this->container->get('security.token_storage')->getToken()->getUser();
@@ -112,7 +101,7 @@ class TaskGroupController extends Controller
                 $taskGroup = new TaskGroup();
                 $taskGroup
                     ->setUser($user)
-                    ->setDescription($jsonRequest->get('description'));
+                    ->setDescription($request->get('description'));
                 $em->persist($taskGroup);
                 $em->flush();
             } catch (\Exception $exception) {
@@ -145,27 +134,14 @@ class TaskGroupController extends Controller
     public function editTaskGroup(Request $request, TaskGroup $taskGroup = null)
     {
         if ($taskGroup) {
-            if ($request->getContentType() === 'json') {
-                try {
-                    $jsonRequest = new ArrayCollection(json_decode($request->getContent(), true));
-                } catch (\Exception $exception) {
-                    return new PrettyJsonResponse([
-                        'response' => true,
-                        'error' => 'Bad Request!'
-                    ], 400);
-                }
-            } else {
-                $jsonRequest = $request;
-            }
-
             /**@var User $user */
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
             if ($taskGroup->getUser()->getId() === $user->getId()) {
-                if ($jsonRequest->get('description')) {
+                if ($request->get('description')) {
                     try {
                         $em = $this->getDoctrine()->getManager();
                         $taskGroup
-                            ->setDescription($jsonRequest->get('description') ? $jsonRequest->get('description') :
+                            ->setDescription($request->get('description') ? $request->get('description') :
                                 $taskGroup->getDescription());
                         $em->persist($taskGroup);
                         $em->flush();

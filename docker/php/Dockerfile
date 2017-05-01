@@ -1,11 +1,15 @@
-FROM php:7.0-fpm-alpine
+FROM php:7.0-fpm
 
-RUN apk add --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev && \
-  docker-php-ext-configure gd \
-    --with-gd \
-    --with-freetype-dir=/usr/include/ \
-    --with-png-dir=/usr/include/ \
-    --with-jpeg-dir=/usr/include/ && \
-  NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
-  docker-php-ext-install -j${NPROC} gd pdo_mysql && \
-  apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
+RUN docker-php-ext-install pdo_mysql
+
+RUN docker-php-ext-enable pdo_mysql
+
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && sed -i '1 a xdebug.remote_autostart=true' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && sed -i '1 a xdebug.remote_mode=req' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && sed -i '1 a xdebug.remote_handler=dbgp' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && sed -i '1 a xdebug.remote_connect_back=1 ' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && sed -i '1 a xdebug.remote_port=9000' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && sed -i '1 a xdebug.remote_host=127.0.0.1' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && sed -i '1 a xdebug.remote_enable=1' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

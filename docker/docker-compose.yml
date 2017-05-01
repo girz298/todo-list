@@ -10,7 +10,7 @@ php:
     working_dir: /app
     links:
         - db
-    command: php -S 0.0.0.0:8000 -t web
+    command: php -S 0.0.0.0:8000 web/app_dev.php
 
 angular-2:
     container_name: todo-angular-2
@@ -36,7 +36,7 @@ proxy:
     container_name: todo-proxy
     image: nginx
     ports:
-        - 80:80
+        - 8000:80
         - 3000:3000
     volumes:
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf

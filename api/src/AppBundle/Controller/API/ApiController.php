@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 
@@ -23,7 +24,7 @@ class ApiController extends Controller
      */
     public function apiEntryPointAction()
     {
-        /**@var AuthorizationChecker $authorizationChecker*/
+        /**@var AuthorizationChecker $authorizationChecker */
         $authorizationChecker = $this->get('security.authorization_checker');
         if ($authorizationChecker->isGranted('ROLE_USER')) {
             return new PrettyJsonResponse([
@@ -38,5 +39,16 @@ class ApiController extends Controller
             'status' => 'unauthorized',
             'message' => 'To work with API authorize!',
         ], 200);
+    }
+
+    /**
+     * @param string $route
+     * @param array $parameters
+     * @param int $referenceType
+     * @return mixed
+     */
+    protected function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH)
+    {
+        return $this->container->get('app.amazing_route_generator')->generate($route, $parameters, $referenceType);
     }
 }

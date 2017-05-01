@@ -3,6 +3,7 @@
 namespace AppBundle\Controller\API\User;
 
 use AppBundle\Component\PrettyJsonResponse;
+use AppBundle\Controller\API\ApiController;
 use AppBundle\Entity\User;
 use Doctrine\DBAL\Driver\PDOException;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,7 @@ use Symfony\Component\Validator\ConstraintViolation;
  * Class UserApiController
  * @package AppBundle\Controller\API\User
  */
-class UserApiController extends Controller
+class UserApiController extends ApiController
 {
     /**
      * @Route("api/login", name="login")
@@ -28,12 +29,9 @@ class UserApiController extends Controller
     public function loginAction()
     {
         // TODO: Should be covered by tests
-        /**@var AuthorizationChecker $authorizationChecker*/
+        /**@var AuthorizationChecker $authorizationChecker */
         $authorizationChecker = $this->get('security.authorization_checker');
-        if ($authorizationChecker->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('api_tasks_all');
-        }
-        /**@var AuthenticationUtils $authenticationUtils*/
+        /**@var AuthenticationUtils $authenticationUtils */
         $authenticationUtils = $this->get('security.authentication_utils');
         $error = $authenticationUtils->getLastAuthenticationError();
         if ($error) {
@@ -41,7 +39,7 @@ class UserApiController extends Controller
                 'response' => true,
                 'error' => $error->getMessage()
             ];
-            return new PrettyJsonResponse($errors,401);
+            return new PrettyJsonResponse($errors, 401);
         }
 
         if ($authorizationChecker->isGranted('ROLE_USER')) {

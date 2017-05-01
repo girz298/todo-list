@@ -19,3 +19,4 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     test_username: test_user
+    base_url: http://localhost:8000

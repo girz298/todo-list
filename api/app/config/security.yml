@@ -27,6 +27,7 @@ security:
 
         main:
             anonymous: ~
+            entry_point: app.entry_point
             # activate different ways to authenticate
 
             #http_basic: ~
@@ -36,12 +37,13 @@ security:
             provider: our_db_provider
 
             form_login:
-                login_path: /api
                 check_path: /api/login
+                success_handler: app.authorization.success.handler
 
             logout:
                 path: /api/logout
                 target: /
+                success_handler: app.logout.success.handler
 
         login_firewall:
             pattern:   ^/api/login$
