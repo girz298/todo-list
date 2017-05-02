@@ -3,6 +3,8 @@
 namespace AppBundle\Controller\API;
 
 use AppBundle\Component\PrettyJsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,7 +20,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class ApiController extends Controller
 {
     /**
-     * @Route("api/", name="api_main")
+     * @Route("/api", name="api_main")
      * @Method({"GET"})
      * @return Response
      */
@@ -38,8 +40,23 @@ class ApiController extends Controller
             'response' => true,
             'status' => 'unauthorized',
             'message' => 'To work with API authorize!',
-        ], 200);
+        ], 403);
     }
+
+//    /**
+//     * @param $request
+//     * @Route("/{url}", name="remove_trailing_slash",
+//     *     requirements={"url" = ".*\/$"}, methods={"GET"})
+//     * @return RedirectResponse
+//     */
+//    public function removeTrailingSlashAction(Request $request)
+//    {
+//        $pathInfo = $request->getPathInfo();
+//        $requestUri = $request->getRequestUri();
+//        $url = str_replace($pathInfo, rtrim($pathInfo, ' /'), $requestUri);
+//
+//        return $this->redirect($url, 301);
+//    }
 
     /**
      * @param string $route

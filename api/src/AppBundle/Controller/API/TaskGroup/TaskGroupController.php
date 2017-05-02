@@ -85,7 +85,7 @@ class TaskGroupController extends ApiController
 
     /**
      * @param Request $request
-     * @Route("api/task-groups", requirements={"taskGroup" = "[0-9]+"}, name="api_task_groups_create")
+     * @Route("api/task-groups", name="api_task_groups_create")
      * @Method({"POST"})
      * @Security("has_role('ROLE_USER')")
      * @return Response
