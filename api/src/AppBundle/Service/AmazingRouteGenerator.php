@@ -25,9 +25,9 @@ class AmazingRouteGenerator extends Router
     {
         $result = parent::generate($name, $parameters, $referenceType);
         if ($referenceType == 0) {
-            return preg_replace('/.*\.php/', $this->container->getParameter('base_url'), $result);
+            return preg_replace('/^http:\/\/(.*?)\//', $this->container->getParameter('base_url').'/', $result);
         }
-        return preg_replace('/.*\.php/', '', $result);
+        return preg_replace('/^http:\/\/(.*?)\//', '/', $result);
     }
 
     public function __construct(ContainerInterface $container, $resource, array $options = array(), RequestContext $context = null)

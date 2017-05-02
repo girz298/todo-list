@@ -26,7 +26,7 @@ db:
     ports:
         - 52000:3306
     environment:
-        MYSQL_DATABASE: symfony
+        MYSQL_DATABASE: todo_db
         MYSQL_USER: root
         MYSQL_ROOT_PASSWORD: pass
     volumes:
