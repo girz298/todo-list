@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Bundle\FrameworkBundle\Console\Application as App;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class WebUserTestCase extends WebTestCase
 {
@@ -26,6 +28,18 @@ class WebUserTestCase extends WebTestCase
             ->loadUserByUsername($this->client->getContainer()->getParameter('test_username'));
         $this->logIn($this->client, $user);
         parent::__construct($name, $data, $dataName);
+    }
+
+    public function setUp()
+    {
+        $kernel = $this->createKernel();
+        $kernel->boot();
+
+        $application = new App($kernel);
+
+        $command = $application->find('doctrine:schema:create');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array('command' => $command->getName()), ['-f']);
     }
 
     protected function logIn(Client $client, User $user)
