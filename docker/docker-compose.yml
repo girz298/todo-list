@@ -65,7 +65,7 @@ services:
       command: ["-c", "phpunit.xml"]
 
   test_db:
-      container_name: todo-test_db
+      container_name: todo-test-db
       image: mysql
       environment:
           MYSQL_DATABASE: todo_db
