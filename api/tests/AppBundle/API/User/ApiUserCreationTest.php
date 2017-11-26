@@ -14,10 +14,12 @@ class ApiUserCreationTest extends WebTestCase
         $client = $this::createClient(['environment' => 'test']);
         $username = $client->getContainer()->getParameter('test_username');
         $client->request('GET', '/api/logout');
+
         $user = $client->getContainer()->get('doctrine')
             ->getRepository("AppBundle:User")
             ->loadUserByUsername($client->getContainer()->getParameter('test_username'));
-        if ($user){
+
+        if ($user) {
             echo 'This User already exist!';
         } else {
             $client->request('POST', '/api/register', [

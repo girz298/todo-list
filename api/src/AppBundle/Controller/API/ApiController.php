@@ -58,6 +58,15 @@ class ApiController extends Controller
 //        return $this->redirect($url, 301);
 //    }
 
+    protected function notValidApiToken()
+    {
+        return new PrettyJsonResponse([
+            'response' => true,
+            'status' => 'unauthorized',
+            'message' => 'Please provide a valid api token!',
+        ], 403);
+    }
+
     /**
      * @param string $route
      * @param array $parameters

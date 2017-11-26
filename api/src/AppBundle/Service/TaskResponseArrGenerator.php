@@ -34,9 +34,19 @@ class TaskResponseArrGenerator
             'data' => ['id' => $task->getId(),
                 'description' => $task->getDescription(),
                 'state_flag' => $task->getStateFlag(),
-                'status' => $task->getStatus(),
-                'type' => $task->getType(),
-                'group' => $task->getGroup()->getId(),
+                'status' => [
+                    'handle' => $task->getStatus(),
+                    'description' => $task->getStatusDescription()
+                ],
+                'type' => [
+                    'handle' => $task->getType(),
+                    'description' => $task->getTypeDescription()
+                ],
+                'group' => [
+                    'id' => $task->getGroup()->getId(),
+                    'name' => $task->getGroup()->getDescription()
+                ],
+                'date' => $task->getCreationDate()
             ]
         ];
     }

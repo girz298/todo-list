@@ -21,28 +21,28 @@ class Task
     const STATUS_NOT_IMPORTANT_URGENT = 3;     // DELEGATE IT AWAY
     const STATUS_NOT_IMPORTANT_NOT_URGENT = 4; // DELETE IT
 
-    private $statuses = [
-        self::STATUS_IMPORTANT_URGENT,
-        self::STATUS_IMPORTANT_NOT_URGENT,
-        self::STATUS_NOT_IMPORTANT_URGENT,     // DEFAULT
-        self::STATUS_NOT_IMPORTANT_NOT_URGENT
-    ];
-
     /*
      * Types of Task by Franklin
      */
-    const TYPE_DAILY_GOAL = 1;          // On THAT TYPE start using Eisenhower method
-    const TYPE_WEEKLY_GOAL = 2;
+    const TYPE_WEEKLY_GOAL = 2;          // On THAT TYPE start using Eisenhower method
     const TYPE_INTERMEDIATE_GOAL = 3;
     const TYPE_LONG_RANGE_GOAL = 4;
     const TYPE_GOVERNING_VALUE = 5;
+    const TYPE_DAILY_GOAL = 1;
+
+    private $statuses = [
+        self::STATUS_IMPORTANT_URGENT => 'STATUS_IMPORTANT_URGENT',
+        self::STATUS_IMPORTANT_NOT_URGENT => 'STATUS_IMPORTANT_NOT_URGENT',
+        self::STATUS_NOT_IMPORTANT_URGENT => 'STATUS_NOT_IMPORTANT_URGENT',     // DEFAULT
+        self::STATUS_NOT_IMPORTANT_NOT_URGENT => 'STATUS_NOT_IMPORTANT_NOT_URGENT'
+    ];
 
     private $types = [
-        self::TYPE_DAILY_GOAL,
-        self::TYPE_WEEKLY_GOAL,
-        self::TYPE_INTERMEDIATE_GOAL,
-        self::TYPE_LONG_RANGE_GOAL,
-        self::TYPE_GOVERNING_VALUE
+        self::TYPE_DAILY_GOAL => 'TYPE_DAILY_GOAL',
+        self::TYPE_WEEKLY_GOAL => 'TYPE_WEEKLY_GOAL',
+        self::TYPE_INTERMEDIATE_GOAL => 'TYPE_INTERMEDIATE_GOAL',
+        self::TYPE_LONG_RANGE_GOAL => 'TYPE_LONG_RANGE_GOAL',
+        self::TYPE_GOVERNING_VALUE => 'TYPE_GOVERNING_VALUE'
     ];
 
     /**
@@ -60,8 +60,6 @@ class Task
      * @ORM\Column(name="description", type="string", length=255)
      */
     private $description;
-
-
     /**
      * @var \DateTime
      * @ORM\Column(name="creation_date", type="datetime", nullable=false)
@@ -69,13 +67,11 @@ class Task
      */
     private $creationDate;
 
-
     /**
      * @var \DateTime
      * @ORM\Column(name="end_date", type="datetime", nullable=false)
      */
     private $endDate;
-
 
     /**
      * @var boolean
@@ -101,11 +97,57 @@ class Task
     private $type;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Task", inversedBy="children")
+     * @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="CASCADE")
+     */
+    private $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Task", mappedBy="parent")
+     */
+    protected $children;
+
+    public function __construct()
+    {
+        $this->creationDate = new \DateTime();
+        $this->setType(self::TYPE_DAILY_GOAL);
+    }
+
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    // always use this to setup a new parent/child relationship
+
+    public function setParent(Task $parent)
+    {
+        $this->parent = $parent;
+    }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    public function addChild(Task $child)
+    {
+        $this->children[] = $child;
+
+        $child->setParent($this);
+    }
+
+    /**
      * @return integer
      */
     public function getType()
     {
         return $this->type;
+    }
+
+    public function getTypeDescription()
+    {
+        return $this->types[$this->type];
     }
 
     /**
@@ -138,6 +180,11 @@ class Task
         return $this->status;
     }
 
+    public function getStatusDescription()
+    {
+        return $this->statuses[$this->status];
+    }
+
     /**
      * @param integer $status
      * @return Task
@@ -147,6 +194,7 @@ class Task
         if ($this->getType() != self::TYPE_DAILY_GOAL) {
             throw new \InvalidArgumentException('Statuses active only for DAILY_GOALS');
         }
+
         if (!in_array($status, $this->statuses)) {
             throw new \InvalidArgumentException(
                 "Invalid status. Status should be in " . join(', ', $this->statuses)
@@ -178,13 +226,6 @@ class Task
         return $this;
     }
 
-
-    public function __construct()
-    {
-        $this->creationDate = new \DateTime();
-        $this->setType(self::TYPE_DAILY_GOAL);
-    }
-
     /**
      * Get id
      *
@@ -193,6 +234,16 @@ class Task
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**
@@ -210,16 +261,6 @@ class Task
     }
 
     /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
      * Get creationDate
      *
      * @return \DateTime
@@ -227,6 +268,16 @@ class Task
     public function getCreationDate()
     {
         return $this->creationDate;
+    }
+
+    /**
+     * Get end date of Task
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
     }
 
     /**
@@ -244,13 +295,13 @@ class Task
     }
 
     /**
-     * Get end date of Task
+     * Get group
      *
-     * @return \DateTime
+     * @return TaskGroup
      */
-    public function getEndDate()
+    public function getGroup()
     {
-        return $this->endDate;
+        return $this->group;
     }
 
     /**
@@ -264,15 +315,5 @@ class Task
         $this->group = $group;
 
         return $this;
-    }
-
-    /**
-     * Get group
-     *
-     * @return TaskGroup
-     */
-    public function getGroup()
-    {
-        return $this->group;
     }
 }

@@ -2,11 +2,10 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use AppBundle\Entity\TaskGroup;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * User
@@ -51,12 +50,37 @@ class User implements UserInterface
      */
     private $role;
 
-
     /**
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\TaskGroup", mappedBy="user")
      */
     private $taskGroups;
+
+    /**
+     * @ORM\Column(name="api_token", type="string", unique=true, nullable=true)
+     */
+    private $apiToken;
+
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email.",
+     * )
+     * @ORM\Column(type="string", length=60, unique=true)
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(name="is_active", type="boolean",  nullable=true)
+     */
+    private $isActive = null;
+
+    public function __construct()
+    {
+        $this->setIsActive(true);
+        $this->setRole('ROLE_USER');
+        $this->taskGroups = new ArrayCollection();
+    }
 
     /**
      * Add task
@@ -96,28 +120,6 @@ class User implements UserInterface
         return $this->taskGroups;
     }
 
-
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Email(
-     *     message = "The email '{{ value }}' is not a valid email.",
-     * )
-     * @ORM\Column(type="string", length=60, unique=true)
-     */
-    private $email;
-
-    /**
-     * @ORM\Column(name="is_active", type="boolean",  nullable=true)
-     */
-    private $isActive = null;
-
-    public function __construct()
-    {
-        $this->setIsActive(true);
-        $this->setRole('ROLE_USER');
-        $this->taskGroups = new ArrayCollection();
-    }
-
     /**
      * Get id
      *
@@ -126,11 +128,6 @@ class User implements UserInterface
     public function getId()
     {
         return $this->id;
-    }
-
-    public function getUsername()
-    {
-        return $this->username;
     }
 
     public function getSalt()
@@ -145,6 +142,20 @@ class User implements UserInterface
         return $this->password;
     }
 
+    /**
+     * Set password
+     *
+     * @param string $password
+     *
+     * @return User
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
     public function getRoles()
     {
         return [$this->role];
@@ -152,6 +163,44 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     *
+     * @return User
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getUserDataToForm()
+    {
+        return [
+            'username' => $this->getUsername(),
+            'email' => $this->getEmail(),
+            'role' => $this->getRole()
+        ];
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
     }
 
     /**
@@ -169,17 +218,13 @@ class User implements UserInterface
     }
 
     /**
-     * Set password
+     * Get email
      *
-     * @param string $password
-     *
-     * @return User
+     * @return string
      */
-    public function setPassword($password)
+    public function getEmail()
     {
-        $this->password = $password;
-
-        return $this;
+        return $this->email;
     }
 
     /**
@@ -197,37 +242,13 @@ class User implements UserInterface
     }
 
     /**
-     * Get email
+     * Get role
      *
      * @return string
      */
-    public function getEmail()
+    public function getRole()
     {
-        return $this->email;
-    }
-
-    /**
-     * Set isActive
-     *
-     * @param boolean $isActive
-     *
-     * @return User
-     */
-    public function setIsActive($isActive)
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    /**
-     * Get isActive
-     *
-     * @return boolean
-     */
-    public function getIsActive()
-    {
-        return $this->isActive;
+        return $this->role;
     }
 
     /**
@@ -245,21 +266,21 @@ class User implements UserInterface
     }
 
     /**
-     * Get role
-     *
-     * @return string
+     * @return mixed
      */
-    public function getRole()
+    public function getApiToken()
     {
-        return $this->role;
+        return $this->apiToken;
     }
 
-    public function getUserDataToForm()
+    /**
+     * @param mixed $apiToken
+     * @return User
+     */
+    public function setApiToken(string $apiToken)
     {
-        return [
-            'username' => $this->getUsername(),
-            'email' => $this->getEmail(),
-            'role' => $this->getRole()
-        ];
+        $this->apiToken = $apiToken;
+
+        return $this;
     }
 }
