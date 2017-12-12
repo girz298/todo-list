@@ -10,6 +10,8 @@ class UserFixture extends Fixture
 {
     const JACK_KOVZEL_EXAMPLE_COM = 'jack.kovzel@example.com';
     const API_TOKEN = 'BpwQwPNqVuv42PMCoijLYJd6QtPs8Cat';
+    const JACK_KOVZEL_USER_NAME = 'jack.kovzel';
+    const JACK_KOVZEL_PASSWORD = 'password';
 
     /**
      * {@inheritdoc}
@@ -19,8 +21,8 @@ class UserFixture extends Fixture
         $user = new User();
         $user
             ->setEmail(self::JACK_KOVZEL_EXAMPLE_COM)
-            ->setUsername('jack.kovzel')
-            ->setPassword('password')
+            ->setUsername(self::JACK_KOVZEL_USER_NAME)
+            ->setPassword(self::JACK_KOVZEL_PASSWORD)
             ->setApiToken(self::API_TOKEN);
 
         $manager->persist($user);

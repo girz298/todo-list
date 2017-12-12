@@ -1,0 +1,32 @@
+services:
+    app.amazing_route_generator:
+        class: AppBundle\Service\AmazingRouteGenerator
+        parent: router
+
+    app.task_response_arr_generator:
+        class: AppBundle\Service\TaskResponseArrGenerator
+        arguments: ["@app.amazing_route_generator"]
+
+    app.task_group_response_arr_generator:
+        class: AppBundle\Service\TaskGroupResponseArrGenerator
+        arguments: ["@app.amazing_route_generator", "@app.task_response_arr_generator"]
+
+    app.authorization.success.handler:
+        class: AppBundle\Component\Authentication\Handler\LoginSuccessHandler
+        arguments: ["@app.amazing_route_generator", "@security.authorization_checker"]
+
+    app.logout.success.handler:
+        class: AppBundle\Component\Authentication\Handler\LogoutSuccessHandler
+        arguments: ["@app.amazing_route_generator"]
+
+    app.entry_point:
+        class: AppBundle\Component\Authentication\EntryPoint\EntryPointRedirection
+        arguments: ["@app.amazing_route_generator"]
+
+    app.security.api_key_authenticator:
+        class: AppBundle\Security\ApiKeyAuthenticator
+
+    app.security.api_key_user_provider:
+        class: AppBundle\Security\ApiKeyUserProvider
+        arguments:
+            - '@doctrine'

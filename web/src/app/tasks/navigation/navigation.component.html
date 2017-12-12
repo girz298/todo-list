@@ -1,0 +1,18 @@
+<nav>
+  <a [routerLink]=" ['./all'] "
+     routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+    Все
+  </a>
+  <a [routerLink]=" ['./today'] "
+     routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+    На сегодня
+  </a>
+  <a [routerLink]=" ['./week'] "
+     routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+    На неделю
+  </a>
+  <a [routerLink]=" ['./month'] "
+     routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+    На месяц
+  </a>
+</nav>

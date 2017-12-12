@@ -113,7 +113,7 @@ class User implements UserInterface
     /**
      * Get tasks
      *
-     * @return ArrayCollection
+     * @return ArrayCollection|TaskGroup[]
      */
     public function getTaskGroups()
     {

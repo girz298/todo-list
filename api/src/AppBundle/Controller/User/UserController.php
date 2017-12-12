@@ -2,21 +2,15 @@
 
 namespace AppBundle\Controller\User;
 
-use AppBundle\Component\PrettyJsonResponse;
 use AppBundle\Entity\ForgotPassword;
 use AppBundle\Form\User\ForgotPasswordType;
 use AppBundle\Form\User\ResetPasswordType;
-use AppBundle\Repository\UserRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use AppBundle\Form\User\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Form\User\UserType;
-use AppBundle\Entity\User;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Class UserController

@@ -1,9 +1,7 @@
 security:
     providers:
-         our_db_provider:
-             entity:
-                 class: AppBundle:User
-                 property: username
+        api_key_user_provider:
+            id: app.security.api_key_user_provider
 
     encoders:
         AppBundle\Entity\User:
@@ -21,29 +19,16 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        authenticate:
+            pattern: ^/api/authenticate
+            security: false
+
         main:
-            anonymous: ~
-            entry_point: app.entry_point
-            # activate different ways to authenticate
+            pattern: ^/api
+            stateless: true
+            simple_preauth:
+                authenticator: app.security.api_key_authenticator
+            provider: api_key_user_provider
 
-            #http_basic: ~
-            # http://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
-            pattern: ^/
-
-            provider: our_db_provider
-
-            form_login:
-                check_path: /api/login
-                success_handler: app.authorization.success.handler
-
-            logout:
-                path: /api/logout
-                target: /
-                success_handler: app.logout.success.handler
-
-        login_firewall:
-            pattern:   ^/api/login$
-            anonymous: ~
-        secured_area:
-            pattern:    ^/
-            form_login: ~
+    access_control:
+        - { path: ^/api, roles: ROLE_API }
